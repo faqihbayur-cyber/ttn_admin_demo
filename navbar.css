@@ -1,0 +1,465 @@
+/* =================
+LOCK SCROLL
+================= */
+
+body.nav-open{
+  overflow:hidden;
+}
+
+.nav-fab{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:
+    linear-gradient(
+      135deg,
+      #D4B185,
+      #B08A5C
+    );
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow: 0 14px 30px rgba(176,138,92,.35);
+  z-index:1001;
+  transition:.3s ease;
+}
+.nav-fab.active{
+  transform: rotate(10deg) scale(1.06);
+}
+.hamburger{
+  width:24px;
+  height:18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.hamburger span{
+  height:3px;
+  width:100%;
+  background:white;
+  border-radius:999px;
+  transition:.3s ease;
+}
+.nav-fab.active
+.hamburger span:nth-child(1){
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-fab.active
+.hamburger span:nth-child(2){
+  opacity:0;
+}
+.nav-fab.active
+.hamburger span:nth-child(3){
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav-overlay{
+  position:fixed;
+  inset:0;
+  background: rgba(45,30,15,.18);
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+  z-index:998;
+}
+.nav-overlay.show{
+  opacity:1;
+  visibility:visible;
+}
+
+.nav-drawer{
+  position:fixed;
+  top:0;
+  right:-320px;
+  width:290px;
+  height:100vh;
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(30px);
+  border-left: 1px solid rgba(255,255,255,.25);
+  box-shadow: -10px 0 40px rgba(176,138,92,.16);
+  padding:28px 20px;
+  display:flex;
+  flex-direction:column;
+  transition:.35s ease;
+  z-index:999;
+}
+.nav-drawer.open{
+  right:0;
+}
+.menu-header{
+  margin-bottom:24px;
+}
+.menu-header h2{
+  font-size:24px;
+  font-weight:800;
+  color:#7b5c38;
+}
+.menu-line{
+  width:100%;
+  height:2px;
+  margin-top:10px;
+  background:
+    linear-gradient(
+      90deg,
+      #D4B185,
+      transparent
+    );
+}
+.nav-link{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-decoration:none;
+  padding:14px 16px;
+  border-radius:18px;
+  margin-bottom:10px;
+  color:#7a6346;
+  font-weight:700;
+  transition:.25s ease;
+}
+.nav-link svg{
+  width:22px;
+  height:22px;
+  fill:none;
+  stroke:#8b6b43;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  flex-shrink:0;
+  transition:.25s ease;
+}
+.nav-link:hover{
+  background: rgba(212,177,133,.12);
+  transform: translateX(6px);
+}
+
+.nav-link.active{
+  background:
+    linear-gradient(
+      135deg,
+      #D4B185,
+      #B08A5C
+    );
+  color:white;
+  box-shadow: 0 10px 25px rgba(176,138,92,.22);
+}
+.nav-link.active svg{
+  stroke:white;
+}
+.logout-btn{
+  margin-top: 10px;
+  background: rgba(239,68,68,.08);
+  color:#dc2626;
+}
+.logout-btn svg{
+  stroke:#dc2626;
+}
+.logout-btn:hover{
+  background: rgba(239,68,68,.14);
+}
+
+#fabAction.nav-fab{
+  position: fixed;
+  right: 31px;
+  bottom: 176px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+
+  /* 🎨 tetap orange theme kamu */
+  background: linear-gradient(135deg, #FFB15A, #E67E22);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 9999;
+
+  box-shadow: 0 14px 30px rgba(230,126,34,.35);
+
+  animation: fabBounce 1.8s ease-in-out infinite;
+
+  /* penting biar pseudo element aman */
+  position: fixed;
+  isolation: isolate;
+}
+
+/* =========================
+   ICON STYLE (SVG GRID)
+========================= */
+#fabAction svg{
+  width: 32px;
+  height: 32px;
+
+  fill: rgba(255,255,255,0.95);
+
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+
+  position: relative;
+  z-index: 3;
+
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+#fabAction:hover svg{
+  transform: scale(1.08);
+  opacity: 1;
+}
+
+/* =========================
+   BOUNCE ANIMATION
+========================= */
+@keyframes fabBounce{
+  0%{
+    transform: scale(1);
+    box-shadow: 0 14px 30px rgba(230,126,34,.35);
+  }
+  50%{
+    transform: scale(1.08);
+    box-shadow: 0 18px 42px rgba(230,126,34,.45);
+  }
+  100%{
+    transform: scale(1);
+    box-shadow: 0 14px 30px rgba(230,126,34,.35);
+  }
+}
+
+/* =========================
+   HOVER / ACTIVE
+========================= */
+#fabAction.nav-fab:hover{
+  transform: scale(1.08);
+  box-shadow: 0 18px 40px rgba(176,138,92,.45);
+}
+
+#fabAction.nav-fab:active{
+  transform: scale(.92);
+}
+
+/* =========================
+   RING SPIN (lebih soft)
+========================= */
+#fabAction::before{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:50%;
+
+  border: 2px dashed rgba(255,255,255,0.85);
+
+  animation: fabSpin 6s linear infinite;
+
+  z-index: 1;
+
+  /* biar lebih soft, gak terlalu “keras” */
+  opacity: .9;
+}
+
+@keyframes fabSpin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
+}
+
+/* =========================
+   PULSE BACKGROUND
+========================= */
+#fabAction::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255,255,255,0.25),
+    rgba(199,146,75,0.9)
+  );
+
+  animation: fabPulse 1.8s ease-out infinite;
+
+  z-index: 0;
+}
+
+@keyframes fabPulse{
+  0%{
+    transform: scale(1);
+    opacity: .55;
+  }
+  100%{
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+#fabFilter.fab-filter{
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #D4B185, #B08A5C);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 9999;
+
+  box-shadow: 0 12px 28px rgba(176,138,92,.28);
+
+  transition: transform .2s ease, box-shadow .2s ease;
+
+  position: fixed;
+  isolation: isolate;
+}
+
+/* hover feel */
+#fabFilter.fab-filter:hover{
+  transform: scale(1.08);
+  box-shadow: 0 18px 40px rgba(176,138,92,.35);
+}
+
+#fabFilter.fab-filter:active{
+  transform: scale(.92);
+}
+
+/* =========================
+   ICON CALENDAR
+========================= */
+#fabFilter svg{
+  width: 30px;
+  height: 30px;
+
+  fill: rgba(255,255,255,0.95);
+
+  position: relative;
+  z-index: 3;
+
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+}
+
+/* =========================
+   ANGKA FILTER (IMPROVED)
+========================= */
+#filterText{
+  position: absolute;
+
+  bottom: 8px;
+  right: 10px;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  color: #fff;
+
+  background: rgba(0,0,0,0.25);
+  padding: 2px 5px;
+  border-radius: 8px;
+
+  line-height: 1;
+
+  z-index: 4;
+
+  backdrop-filter: blur(4px);
+}
+.nav-link-locked {
+  pointer-events: all !important;
+  cursor: default !important;
+}
+
+.nav-lock-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 2px 0;
+}
+
+.nav-lock-input {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 0.8rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.nav-lock-input:focus {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.15);
+}
+
+.nav-lock-input::placeholder {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.75rem;
+}
+
+.nav-lock-submit {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-lock-submit:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.nav-lock-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-link-error .nav-lock-input {
+  border-color: #e74c3c;
+  animation: lockShake 0.4s ease;
+}
+
+@keyframes lockShake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+@media (max-width:768px){
+  .nav-fab{
+    position:fixed;
+    bottom:24px;
+    right:24px;
+    width:50px;
+    height:50px;
+  }
+  #fabFilter.fab-filter{
+    position:fixed;
+    bottom:80px;
+    right:24px;
+    width:50px;
+    height:50px;
+  }
+  #fabAction.nav-fab{
+    position: fixed;
+    right: 24px;
+    bottom: 145px;
+    width: 50px;
+    height: 50px;
+  }
+}

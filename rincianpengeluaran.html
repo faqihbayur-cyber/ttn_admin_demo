@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+/>
+
+<title>Rincian Pengeluaran</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+<link rel="stylesheet" href="rincianpengeluaran.css"/>
+<link rel="stylesheet" href="navbar.css"/>
+<link rel="stylesheet" href="floatingButton.css"/>
+<link rel="stylesheet" href="root.css"/>
+
+</head>
+<body>
+
+<div class="page">
+
+<header class="header"></header>
+
+<main class="content-wrapper">
+  <div class="content-header">
+    <div class="section-title">
+      Rincian Pengeluaran
+    </div>
+  </div>
+  <div class="content-grid">
+    <!-- LEFT -->
+    <section class="rincian-section">
+      <div class="section-card">
+        <div class="card-header">
+          <h2>
+            Rincian Produksi
+          </h2>
+        </div>
+        <div id="rincianProduksi" class="card-content">
+          <div class="summary-card">
+            <div class="summary-label">
+              Total Pengeluaran Produksi
+            </div>
+            <div class="summary-total" id="summaryTotalProduksi">
+              Rp0
+            </div>
+            <div class="summary-row">
+              <div class="summary-box">
+                <span>Variable</span>
+                <strong id="summaryVariable">
+                  Rp0
+                </strong>
+              </div>
+              <div class="summary-box">
+                <span>Fix</span>
+                <strong id="summaryFix">
+                  Rp0
+                </strong>
+              </div>
+              <div class="summary-box">
+                <span>Marginal</span>
+                <strong id="summaryMarginal">
+                  Rp0
+                </strong>
+              </div>
+            </div>
+            <div class="summary-filter-row">
+              <button class="summary-filter-btn" id="btnFilterRange">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+              </svg>
+                Rentang
+              </button>
+              <button class="summary-filter-btn" id="btnFilterJenis">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-.53 14.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V8.25a.75.75 0 0 0-1.5 0v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3Z" clip-rule="evenodd" />
+                </svg>
+                Pilih Jenis
+              </button>
+              <button class="summary-filter-btn" id="btnCariAkun">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                  <path d="M8.25 10.875a2.625 2.625 0 1 1 5.25 0 2.625 2.625 0 0 1-5.25 0Z" />
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.125 4.5a4.125 4.125 0 1 0 2.338 7.524l2.007 2.006a.75.75 0 1 0 1.06-1.06l-2.006-2.007a4.125 4.125 0 0 0-3.399-6.463Z" clip-rule="evenodd" />
+                </svg>
+                Cari
+              </button>
+            </div>            
+          </div>
+          <div class="rincian-table-card">
+          
+            <div class="table-title">
+              Riwayat Pengeluaran
+            </div>
+          
+            <div class="table-wrapper">
+            
+              <table class="rincian-table">
+            
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                    <th>Jenis</th>
+                    <th>Qty</th>
+                    <th>Harga</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+            
+                <tbody id="rincianTableBody">
+                  <!-- rows -->
+                </tbody>
+            
+                <tfoot id="rincianTableFooter">
+                  <!-- footer -->
+                </tfoot>
+            
+              </table>
+            
+            </div>
+          
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- RIGHT -->
+    <section class="rincian-section">
+      <div class="section-card">
+        <div class="card-header">
+          <h2>
+            Rincian Distribusi
+          </h2>
+        </div>
+        <div id="rincianDistribusi" class="card-content">
+          <!-- SUMMARY -->
+          <div class="summary-card">
+            <div class="summary-label">
+              Total Distribusi Hari Ini
+            </div>
+            <div class="summary-total" id="summaryTotalDistribusi">
+              Rp0
+            </div>
+            <div class="summary-row">
+    
+              <div class="summary-box">
+                <span>Kasbon</span>
+                <strong id="summaryKasbonDistribusi">Rp0</strong>
+              </div>
+    
+              <div class="summary-box">
+                <span>Margin</span>
+                <strong id="summaryMarginDistribusi">Rp0</strong>
+              </div>
+    
+              <div class="summary-box">
+                <span>Kurir</span>
+                <strong id="summaryKurirDistribusi">0</strong>
+              </div>
+    
+            </div>
+            <div class="summary-filter-row">
+              <button class="summary-filter-btn" id="btnFilterRangeDistribusi">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+              </svg>
+                Rentang
+              </button>
+              <button class="summary-filter-btn" id="btnFilterJenisDistribusi">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-.53 14.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V8.25a.75.75 0 0 0-1.5 0v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3Z" clip-rule="evenodd" />
+                </svg>
+                Pilih Jenis
+              </button>
+              <button class="summary-filter-btn" id="btnCariAkunDistribusi">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                  <path d="M8.25 10.875a2.625 2.625 0 1 1 5.25 0 2.625 2.625 0 0 1-5.25 0Z" />
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.125 4.5a4.125 4.125 0 1 0 2.338 7.524l2.007 2.006a.75.75 0 1 0 1.06-1.06l-2.006-2.007a4.125 4.125 0 0 0-3.399-6.463Z" clip-rule="evenodd" />
+                </svg>
+                Cari
+              </button>
+            </div>
+          </div>
+          <div class="rincian-table-card">
+            <div class="table-title">
+              Riwayat Pengeluaran
+            </div>
+            <div class="table-wrapper">
+              <table class="rincian-table">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                    <th>Jenis</th>
+                    <th>Harga</th>
+                  </tr>
+                </thead>
+                <tbody id="rincianDistribusiTableBody">
+                  <!-- rows -->
+                </tbody>
+                <tfoot id="rincianDistribusiTableFooter">
+                  <!-- footer -->
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="refreshOverlay" class="refresh-overlay hidden">
+  <div class="refresh-box">
+
+    <div class="refresh-title">
+      Ada data baru
+    </div>
+
+    <div class="refresh-text" id="refreshText">
+      Klik segarkan untuk update
+    </div>
+
+    <button id="btnRefresh">
+      Segarkan
+    </button>
+
+  </div>
+</div>
+</div>
+
+<!-- FILTER PRODUKSI -->
+<div id="filterRangeOverlay" class="filter-overlay hidden">
+  <div class="filter-box">
+    <div class="filter-title">
+      📅 Filter Rentang Tanggal
+    </div>
+
+    <div class="filter-group">
+      <label>Dari Tanggal</label>
+      <input type="date" id="filterFromDate">
+    </div>
+
+    <div class="filter-group">
+      <label>Sampai Tanggal</label>
+      <input type="date" id="filterToDate">
+    </div>
+
+    <div class="filter-actions">
+      <button id="btnApplyRange">Terapkan</button>
+      <button id="btnResetRange" class="reset">Reset</button>
+    </div>
+  </div>
+</div>
+<div id="filterJenisOverlay" class="overlay hidden">
+  <div class="popup">
+    <h3>Pilih Jenis</h3>
+
+    <select id="filterJenisSelect">
+      <option value="">Semua</option>
+      <option value="Variable">Variable</option>
+      <option value="Fix">Fix</option>
+      <option value="Marginal">Marginal</option>
+    </select>
+    
+    <div class="filter-actions">
+      <button id="btnApplyJenis">Terapkan</button>
+    </div>
+  </div>
+</div>
+<div id="filterAkunOverlay" class="overlay hidden">
+  <div class="popup">
+    <h3>Cari Pengeluaran</h3>
+
+    <input id="searchAkunInput" placeholder="Cari nama pengeluaran..." />
+
+    <div id="suggestList"></div>
+    
+    <div class="filter-actions">
+      <button id="btnApplyAkun">Terapkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER DISTRIBUSI -->
+<div id="filterRangeDistribusiOverlay" class="filter-overlay hidden">
+  <div class="filter-box">
+    <div class="filter-title">📅 Filter Rentang Tanggal</div>
+    <div class="filter-group">
+      <label>Dari Tanggal</label>
+      <input type="date" id="filterFromDateDistribusi">
+    </div>
+    <div class="filter-group">
+      <label>Sampai Tanggal</label>
+      <input type="date" id="filterToDateDistribusi">
+    </div>
+    <div class="filter-actions">
+      <button id="btnApplyRangeDistribusi">Terapkan</button>
+      <button id="btnResetRangeDistribusi" class="reset">Reset</button>
+    </div>
+  </div>
+</div>
+<div id="filterJenisDistribusiOverlay" class="overlay hidden">
+  <div class="popup">
+    <h3>Pilih Jenis</h3>
+    <select id="filterJenisDistribusiSelect">
+      <option value="">Semua</option>
+      <option value="Customer Baru Hunter">Customer Baru Hunter</option>
+      <option value="Perbaikan Peralatan">Perbaikan Peralatan</option>
+      <option value="Lainnya">Lainnya</option>
+    </select>
+    <div class="filter-actions">
+      <button id="btnApplyJenisDistribusi">Terapkan</button>
+    </div>
+  </div>
+</div>
+<div id="filterAkunDistribusiOverlay" class="overlay hidden">
+  <div class="popup">
+    <h3>Cari Pengeluaran</h3>
+    <input id="searchAkunDistribusiInput" placeholder="Cari nama pengeluaran..." />
+    <div id="suggestListDistribusi"></div>
+    <div class="filter-actions">
+      <button id="btnApplyAkunDistribusi">Terapkan</button>
+    </div>
+  </div>
+</div>
+
+<nav></nav>
+<!-- FAB FILTER (atas / lebih kecil / independen) -->
+<div id="fabFilter" class="fab-filter">
+  <span id="filterText">A</span>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+    <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+    <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+  </svg>
+
+
+</div>
+<!-- FAB SYNC -->
+<div id="fabAction" class="nav-fab">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+    <path fill-rule="evenodd" d="M3 6a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3V6ZM3 15.75a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2.25Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3v-2.25Z" clip-rule="evenodd" />
+  </svg>
+
+</div>
+<script src="navbar.js"></script>
+<script type="module" src="rincianpengeluaran.js"></script>
+
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central Analytics Distribution</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="analysisdistribusi.css">
+<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="root.css">
+
+</head>
+<body>
+<div class="page">
+<!-- ===== HEADER ===== -->
+<header class="dashboard-header">
+  <div class="header-inner">
+    <div class="header-top">
+      <h1 class="header-title">Central Analytics Distribution</h1>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="header-datetime" id="month-picker-btn" style="cursor:pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+          <span id="selected-month-label">Memuat...</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;opacity:0.7;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </div>
+
+        <!-- Dropdown bulan -->
+        <div class="month-dropdown" id="month-dropdown">
+          <div class="month-nav">
+            <button class="month-nav-btn" id="prev-year">‹</button>
+            <span id="year-label">2026</span>
+            <button class="month-nav-btn" id="next-year">›</button>
+          </div>
+          <div class="month-grid" id="month-grid"></div>
+        </div>
+        <button class="reload-btn" id="reload-btn" title="Reload data">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" id="reload-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="header-filters">
+      <button class="period-btn" data-period="week">Minggu</button>
+      <button class="period-btn active" data-period="month">Bulan</button>
+      <button class="period-btn" data-period="year">Tahun</button>
+      <button class="custom-range-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+        </svg>
+        Custom Range
+      </button>
+    </div>
+    <div class="custom-range-overlay" id="custom-range-overlay">
+      <div class="custom-range-modal">
+        <h3>Pilih Rentang Tanggal</h3>
+        <div class="custom-range-calendars">
+          <!-- Kalender Kiri -->
+          <div class="mini-calendar" id="cal-left">
+            <div class="mini-cal-header">
+              <button class="mini-cal-nav" id="cal-prev">&#8249;</button>
+              <span id="cal-left-label"></span>
+              <button class="mini-cal-nav" id="cal-next">&#8250;</button>
+            </div>
+            <div class="mini-cal-grid" id="cal-left-grid"></div>
+          </div>
+          <!-- Kalender Kanan -->
+          <div class="mini-calendar" id="cal-right">
+            <div class="mini-cal-header">
+              <span id="cal-right-label" style="text-align:center;width:100%;display:block;"></span>
+            </div>
+            <div class="mini-cal-grid" id="cal-right-grid"></div>
+          </div>
+        </div>
+        <!-- Preview range terpilih -->
+        <div class="custom-range-selected">
+          <span id="range-start-label">Pilih tanggal mulai</span>
+          <span class="range-sep">→</span>
+          <span id="range-end-label">Pilih tanggal akhir</span>
+        </div>
+        <div class="custom-range-actions">
+          <button class="custom-range-cancel" id="custom-range-cancel">Batal</button>
+          <button class="custom-range-apply" id="custom-range-apply" disabled>Terapkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="main-container">
+  <!-- ===== EXECUTIVE KPI CARDS ===== -->
+  <section class="section animate-in" style="animation-delay:0.1s;">
+    <div class="kpi-grid" id="kpi-grid"></div>
+  </section>
+
+  <!-- ===== REVENUE ANALYTICS ===== -->
+  <section class="section animate-in" style="animation-delay:0.2s;">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Revenue Trend</h3>
+          <span class="section-subtitle">12 Bulan Terakhir</span>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="revenueChart"></canvas>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#b18b63;"></span>Revenue</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2ecc71;"></span>Expenditure</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#3498db;"></span>Net Profit</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SALES PERFORMANCE & HUNTER PERFORMANCE ===== -->
+  <div class="two-col">
+    <section class="section animate-in" style="animation-delay:0.3s;">
+      <div class="section-header">
+        <h3 class="section-title">Top Sales Performance</h3>
+        <button id="btn-slip-gaji" class="btn-slip-gaji">Tetapkan Slip Gaji</button>
+      </div>
+      <div class="table-card">
+        <div class="sales-table-wrapper">
+          <table class="data-table" id="sales-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Nama</th>
+                <th>Pay</th>
+                <th>Expired</th>
+                <th>Customer New</th>
+                <th>Customer Putus</th>
+                <th class="col-group-potongan">Potongan T. Customer</th>
+                <th class="col-group-potongan">Potongan T. Data</th>
+                <th class="col-group-potongan">Kasbon</th>
+                <th class="col-group-potongan">Klaim Insentif</th>
+                <th class="col-group-bonus">Bonus Kunjungan</th>
+                <th class="col-group-bonus">Bonus Pay</th>
+                <th class="col-group-bonus">Bonus Kehadiran</th>
+                <th class="col-group-hari">Jumlah Hari Kerja</th>
+                <th class="col-group-hari">Jumlah Hari Libur</th>
+                <th class="col-group-score">Score</th>
+                <th class="col-group-score">Grade</th>
+              </tr>
+            </thead>
+            <tbody id="sales-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="slip-gaji-card" class="table-card animate-in slip-gaji-card">
+        <div class="slip-layout">
+      
+          <!-- KIRI: INPUT -->
+          <div class="slip-left">
+            <div class="slip-section-header">
+              <h4 class="slip-section-title">Form Slip Gaji</h4>
+              <button id="slip-btn-load-server" class="slip-btn-server">Tampilkan Data Server</button>
+            </div>
+            <div class="slip-section-body">
+      
+              <!-- Pilih Nama & Periode -->
+              <div class="slip-meta">
+                <select id="slip-nama" class="slip-gaji-input">
+                  <option value="">-- Pilih Nama --</option>
+                </select>
+                <input id="slip-periode" type="text" class="slip-gaji-input" placeholder="Periode (contoh: Mei 2026)" readonly/>
+              </div>
+      
+              <!-- PENDAPATAN -->
+              <div class="slip-group">
+                <div class="slip-group-title">Pendapatan</div>
+                <div class="slip-group-cols-head">
+                  <span>Keterangan</span><span>Hari</span><span>Pembayaran</span>
+                </div>
+      
+                <!-- Upah Pokok -->
+              <div class="slip-row" id="slip-row-upah">
+                <span class="slip-row-nama">Upah Pokok</span>
+                <input class="slip-row-hari slip-editable" id="slip-upah-hari" type="text" inputmode="numeric" value="-"/>
+                <input class="slip-row-uang slip-editable" id="slip-upah-uang" type="number" value="-"/>
+              </div>
+
+              <!-- Tunjangan Transport -->
+              <div class="slip-row" id="slip-row-transport">
+                <span class="slip-row-nama">Tunjangan Transport</span>
+                <input class="slip-row-hari slip-editable" id="slip-transport-hari" type="number" value="-"/>
+                <input class="slip-row-uang slip-editable" id="slip-transport-uang" type="number" value="-"/>
+              </div>
+              <!-- Tunjangan Hari Libur -->
+              <div class="slip-row" id="slip-row-libur" style="display:none;">
+                <span class="slip-row-nama">Tunjangan Hari Libur</span>
+                <input class="slip-row-hari slip-editable" id="slip-libur-hari" type="number" value="-"/>
+                <input class="slip-row-uang slip-editable" id="slip-libur-uang" type="number" value="-"/>
+              </div>
+      
+                <!-- Tambahan dinamis -->
+                <div id="slip-pendapatan-extra"></div>
+      
+                <button class="slip-add-btn" id="slip-add-pendapatan">+ Tambah Lainnya</button>
+              </div>
+              <!-- BONUS -->
+              <div class="slip-group">
+                <div class="slip-group-title">Bonus</div>
+                <div class="slip-group-cols-head">
+                  <span>Keterangan</span><span>Hari</span><span>Pembayaran</span>
+                </div>
+                <div class="slip-row" id="slip-row-bonus-pay">
+                <span class="slip-row-nama">Bonus Pay</span>
+                <input class="slip-row-hari slip-editable" type="number" value="-" disabled/>
+                <input class="slip-row-uang slip-editable" id="slip-bonus-pay-uang" type="number" value="-"/>
+              </div>
+              <div class="slip-row" id="slip-row-bonus-kunjungan">
+                <span class="slip-row-nama">Bonus Kunjungan</span>
+                <input class="slip-row-hari slip-editable" type="number" value="-" disabled/>
+                <input class="slip-row-uang slip-editable" id="slip-bonus-kunjungan-uang" type="number" value="-"/>
+              </div>
+              <div class="slip-row" id="slip-row-bonus-kehadiran">
+                <span class="slip-row-nama">Bonus Kehadiran</span>
+                <input class="slip-row-hari slip-editable" type="number" value="-" disabled/>
+                <input class="slip-row-uang slip-editable" id="slip-bonus-kehadiran-uang" type="number" value="-"/>
+              </div>
+
+                <!-- Tambahan dinamis bonus -->
+                <div id="slip-bonus-extra"></div>
+
+                <button class="slip-add-btn" id="slip-add-bonus">+ Tambah Lainnya</button>
+              </div>
+              <!-- POTONGAN -->
+              <div class="slip-group">
+                <div class="slip-group-title">Potongan</div>
+                <div class="slip-group-cols-head">
+                  <span>Keterangan</span><span>Hari</span><span>Pembayaran</span>
+                </div>
+                <div class="slip-row">
+                <span class="slip-row-nama">Target Customer</span>
+                <input class="slip-row-hari slip-editable" type="number" value="-" disabled/>
+                <input class="slip-row-uang slip-editable" id="slip-pot-customer" type="number" value="-"/>
+              </div>
+              <div class="slip-row">
+                <span class="slip-row-nama">Target Data</span>
+                <input class="slip-row-hari slip-editable" type="number" value="-" disabled/>
+                <input class="slip-row-uang slip-editable" id="slip-pot-data" type="number" value="-"/>
+              </div>
+              <div class="slip-row">
+                <span class="slip-row-nama">Kasbon</span>
+                <input class="slip-row-hari slip-editable" type="number" value="-" disabled/>
+                <input class="slip-row-uang slip-editable" id="slip-pot-kasbon" type="number" value="-"/>
+              </div>
+              <div class="slip-row">
+                <span class="slip-row-nama">Klaim Insentif</span>
+                <input class="slip-row-hari slip-editable" type="number" value="-" disabled/>
+                <input class="slip-row-uang slip-editable" id="slip-pot-klaim" type="number" value="-"/>
+              </div>
+
+                <!-- Tambahan dinamis potongan -->
+                <div id="slip-potongan-extra"></div>
+
+                <button class="slip-add-btn" id="slip-add-potongan">+ Tambah Lainnya</button>
+              </div>
+            </div>
+            <!-- Catatan -->
+            <div class="slip-group">
+              <div class="slip-group-title">Catatan</div>
+              <textarea
+                id="slip-catatan"
+                class="slip-catatan-input"
+                rows="3"
+                placeholder="Pembayaran gaji telah dilakukan oleh perusahaan Melalui delegasi secara tunai ke pegawai"
+              ></textarea>
+            </div>
+
+            <div class="slip-section-footer">
+              <button class="slip-gaji-btn-save" id="slip-btn-simpan">Simpan Slip Gaji</button>
+            </div>
+          </div>
+      
+          <!-- KANAN: PREVIEW -->
+          <div class="slip-right">
+            <div class="slip-section-header">
+              <h4 class="slip-section-title">Preview Slip Gaji</h4>
+            </div>
+            <div class="slip-section-body" id="slip-preview">
+              <div class="slip-preview-meta">
+                <div class="slip-preview-nama" id="prev-nama">-</div>
+                <div class="slip-preview-periode" id="prev-periode">-</div>
+              </div>
+      
+              <!-- Preview Pendapatan -->
+              <div class="slip-group">
+                <div class="slip-group-title">Pendapatan</div>
+                <div class="slip-group-cols-head">
+                  <span>Keterangan</span><span>Hari</span><span>Pembayaran</span>
+                </div>
+                <div id="prev-pendapatan-rows"></div>
+                <div class="slip-row slip-row-total">
+                  <span class="slip-row-nama">Total Pendapatan</span>
+                  <span class="slip-row-hari"></span>
+                  <span class="slip-row-uang" id="prev-total-pendapatan">Rp 0</span>
+                </div>
+              </div>
+      
+              <!-- Preview Bonus -->
+              <div class="slip-group">
+                <div class="slip-group-title">Bonus</div>
+                <div class="slip-group-cols-head">
+                  <span>Keterangan</span><span>Hari</span><span>Pembayaran</span>
+                </div>
+                <div id="prev-bonus-rows"></div>
+                <div class="slip-row slip-row-total">
+                  <span class="slip-row-nama">Total Bonus</span>
+                  <span class="slip-row-hari"></span>
+                  <span class="slip-row-uang" id="prev-total-bonus">Rp 0</span>
+                </div>
+              </div>
+              <!-- Preview Potongan -->
+              <div class="slip-group">
+                <div class="slip-group-title">Potongan</div>
+                <div class="slip-group-cols-head">
+                  <span>Keterangan</span><span>Hari</span><span>Pembayaran</span>
+                </div>
+                <div id="prev-potongan-rows"></div>
+                <div class="slip-row slip-row-total">
+                  <span class="slip-row-nama">Total Potongan</span>
+                  <span class="slip-row-hari"></span>
+                  <span class="slip-row-uang" id="prev-total-potongan">Rp 0</span>
+                </div>
+              </div>
+              
+              <!-- Performa Sales -->
+              <div class="slip-group slip-group-performa" id="prev-performa-group" style="display:none;">
+                <div class="slip-group-title">Performa Sales</div>
+                <div class="slip-performa-grid">
+                  <div class="slip-performa-item">
+                    <div class="slip-performa-label">Rank</div>
+                    <div class="slip-performa-val" id="prev-rank">-</div>
+                  </div>
+                  <div class="slip-performa-item">
+                    <div class="slip-performa-label">Score</div>
+                    <div class="slip-performa-val" id="prev-score">-</div>
+                  </div>
+                  <div class="slip-performa-item">
+                    <div class="slip-performa-label">Grade</div>
+                    <div class="slip-performa-val" id="prev-grade">-</div>
+                  </div>
+                  <div class="slip-performa-item">
+                    <div class="slip-performa-label">Posisi</div>
+                    <div class="slip-performa-val" id="prev-posisi">-</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Penerimaan -->
+              <div class="slip-group slip-group-penerimaan">
+                <div class="slip-row slip-row-penerimaan">
+                  <span class="slip-row-nama">Total Penerimaan</span>
+                  <span class="slip-row-hari"></span>
+                  <span class="slip-row-uang" id="prev-total-penerimaan">Rp 0</span>
+                </div>
+              </div>
+            </div>
+            <!-- Preview Catatan -->
+            <div class="slip-group slip-group-catatan" id="prev-catatan-group" style="display:none;">
+              <div class="slip-group-title">Catatan</div>
+              <div class="slip-catatan-preview" id="prev-catatan-text"></div>
+            </div>
+
+            <div class="slip-section-footer">
+              <button class="slip-gaji-btn-save">Cetak / Download</button>
+            </div>
+          </div>
+      
+        </div>
+      </div>
+    </section>
+
+    <section class="section animate-in" style="animation-delay:0.35s;">
+      <div class="section-header">
+        <h3 class="section-title">Produk Best Seller</h3>
+      </div>
+      <div class="hunter-grid" id="hunter-grid"></div>
+    </section>
+  </div>
+
+  <div class="section animate-in" style="animation-delay:0.4s;">
+    <div class="section-header">
+      <h3 class="section-title">Persentase Pay per Varian</h3>
+    </div>
+    <div class="table-card varian-chart-card" id="varian-chart-card">
+      <div class="varian-chart-wrap">
+        <canvas id="varian-donut-chart" width="220" height="220"></canvas>
+        <div class="varian-chart-center" id="varian-chart-center">
+          <div class="varian-center-val" id="varian-center-val">-</div>
+          <div class="varian-center-label">avg %</div>
+        </div>
+      </div>
+      <div class="varian-legend" id="varian-legend"></div>
+    </div>
+  </div>
+<!-- ===== PEMUTIHAN NOTA ===== -->
+  <section class="section animate-in" style="animation-delay:0.45s;">
+    <div class="section-header">
+      <h3 class="section-title">Pemutihan Nota</h3>
+    </div>
+    <div class="nota-grid" id="nota-grid">
+
+      <!-- Template card (akan di-clone JS) -->
+      <div class="nota-card">
+        <div class="nota-card-header">
+          <span class="nota-card-nama">Ahmad Fauzi</span>
+          <span class="nota-card-role">Kurir</span>
+        </div>
+        <div class="nota-card-body">
+          <div class="nota-card-row">
+            <span class="nota-row-label">Customer</span>
+            <div class="nota-row-vals">
+              <span class="nota-row-qty">500</span>
+              <span class="nota-row-nominal">(Rp 2.000.000)</span>
+              <span class="nota-row-badge up">▲ 12%</span>
+            </div>
+          </div>
+          <div class="nota-card-row">
+            <span class="nota-row-label">Botol Besar (BB)</span>
+            <div class="nota-row-vals">
+              <span class="nota-row-qty">100</span>
+              <span class="nota-row-nominal">(Rp 10.000.000)</span>
+              <span class="nota-row-badge down">▼ 5%</span>
+            </div>
+          </div>
+          <div class="nota-card-row">
+            <span class="nota-row-label">Cup Besar (CB)</span>
+            <div class="nota-row-vals">
+              <span class="nota-row-qty">80</span>
+              <span class="nota-row-nominal">(Rp 8.000.000)</span>
+              <span class="nota-row-badge flat">→ 0%</span>
+            </div>
+          </div>
+        </div>
+        <div class="nota-card-footer">
+          <button class="nota-reload-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            Reload
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Summary Card -->
+    <div class="nota-summary-card" id="nota-summary-card" style="display:none;">
+      <div class="nota-summary-title">Total Keseluruhan</div>
+      <div class="nota-summary-total-nominal">
+        <span>Rp</span><span id="nota-summary-grand-total">0</span>
+      </div>
+      <div id="nota-summary-alert" class="nota-summary-alert" style="display:none;"></div>
+      <div class="nota-summary-divider"></div>
+      <div class="chart-legend">
+        <span class="legend-dot dot-ini"></span><span>Bulan Ini</span>
+        <span class="legend-dot dot-prev"></span><span>Bulan Lalu</span>
+      </div>
+      <div id="nota-summary-chart" class="nota-summary-chart"></div>
+      <div class="nota-summary-divider"></div>
+      <div class="nota-summary-body" id="nota-summary-body"></div>
+    </div>
+
+  </section>
+
+</main>
+</div>
+<nav></nav>
+
+<script src="navbar.js"></script>
+<script type="module" src="analysisdistribusi.js"></script>
+
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
+
+</body>
+</html>

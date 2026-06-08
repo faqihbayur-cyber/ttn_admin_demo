@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTN Admin Cabang</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="stockopname.css">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="kalkulator.css">
+  <link rel="stylesheet" href="kalender.css">
+  <link rel="stylesheet" href="root.css">
+
+</head>
+<body>
+
+<div class="page">
+
+  <header class="header">
+    <div class="header-left">
+      <h1>Input & Output</h1>
+    </div>
+    <div class="header-actions">
+      
+      <button id="inputStockBtn" class="reload-users-btn" type="button" aria-label="Input Stock">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+        </svg>
+        <span class="tooltip">Input Stock</span>
+      </button>
+      
+      <button id="inputStockPlusBtn" class="reload-users-btn" type="button" aria-label="Amplop">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+        </svg>
+        <span class="tooltip">Input Tambahan</span>
+      </button>
+      
+      <button id="reloadUsersBtn" class="reload-users-btn" aria-label="Reload Users">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+          <path d="M21 3v6h-6" />
+        </svg>
+        <span class="tooltip">Reload Data</span>
+      </button>
+      
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="content-wrap">
+      <!-- KIRI -->
+      <section class="content-left">
+        <div class="users-card">
+          <h1 class="page-title">RINCIAN PRODUKSI</h1>
+          <div class="saldo-bar">
+            <div class="saldo-kemarin-card">
+              <div class="saldo-kemarin-title">SALDO BULAN KEMARIN</div>
+              <div class="saldo-kemarin-grid" id="saldoKemarinGrid"></div>
+            </div>
+            <div class="saldo-actions">
+              <button class="saldo-btn saldo-btn-icon" id="btnSaldoBulanKemarin" title="Reload Saldo">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16.5V9.75"/>
+                  <path d="M12 9.75l3 3"/>
+                  <path d="M12 9.75l-3 3"/>
+                  <path d="M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75"/>
+                </svg>
+              </button>
+              <button class="saldo-btn" id="btnFilterRentang" title="Filter Rentang Tanggal">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                <span>Rentang</span>
+              </button>
+              <button class="saldo-btn" id="btnFilterKolom" title="Filter Kolom">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 6h16M7 12h10M10 18h4"/>
+                </svg>
+                <span>Kolom</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="laporan-table-card">
+            <div class="laporan-table-scroll">
+      
+              <table class="laporan-tbl">
+                <thead id="laporanThead"></thead>
+                <tbody id="laporanTbody"></tbody>
+                <tfoot id="laporanTfoot"></tfoot>
+              </table>
+      
+            </div>
+          </div>
+      
+        </div>
+      </section>
+      <div id="analisaCard" class="analisa-card">
+      
+        <div class="analisa-header">
+          <div class="analisa-title">Analisa Data</div>
+          <div class="analisa-subtitle">Summary dari Footer Tabel</div>
+        </div>
+        <div class="analisa-chart-wrap">
+          <div class="chart-center-text" id="chartCenterText">
+            TOTAL INPUT<br>
+            <b>0</b>
+          </div>
+          <canvas id="analisaChart"></canvas>
+        </div>
+        <div id="analisaBody" class="analisa-body"></div>
+      </div>
+      <!-- KANAN -->
+      <aside class="content-right">
+        <div class="header-filter">
+          <div class="calendar-card">
+            <div class="calendar-header">
+              <div id="calendarMonthYear" class="calendar-month-year">
+                Januari 2026
+              </div>
+              <button id="dateFilterBtn" class="calendar-next-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M9 6L15 12L9 18" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+            <div class="calendar-days">
+              <span>S</span>
+              <span>S</span>
+              <span>R</span>
+              <span>K</span>
+              <span>J</span>
+              <span>S</span>
+              <span>M</span>
+            </div>
+            <div id="calendarDates" class="calendar-dates"></div>
+            <!-- Kalkulator -->
+            <button id="openCalculatorBtn" class="calendar-calculator-btn">
+              Kalkulator
+            </button>
+          </div>
+          <input type="date" id="dateFilterInput" class="date-filter-input" />
+        </div>
+      </aside>
+      <div id="calculatorRoot"></div>
+    </div>
+  </main>
+</div>
+
+<!-- POPUP INPUT STOCK -->
+<div id="popupStockOverlay" class="popup-detail-overlay">
+  <div id="popupStockCard" class="popup-stock-card">
+    <div id="popupStockDrag" class="popup-stock-drag">
+      <div class="popup-stock-handle"></div>
+    </div>
+
+    <div class="popup-stock-header">
+      <div class="popup-stock-title-wrap">
+        <h3>Input Stock</h3>
+        <span id="popupStockDateText" class="popup-stock-date">
+          -
+        </span>
+      </div>
+      <button id="closePopupStock" class="popup-stock-close">
+        ✕
+      </button>
+    </div>
+    <div class="popup-stock-body">
+      <div id="popupStockForm"></div>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP RENTANG -->
+<div id="popupRentang" class="filter-popup-fixed hidden">
+  <div class="filter-popup-box">
+    <div class="filter-popup-title">Filter Rentang Tanggal</div>
+    <div class="filter-popup-group">
+      <label>Dari Tanggal</label>
+      <input type="date" id="rentangDari" class="filter-popup-input" />
+    </div>
+    <div class="filter-popup-group">
+      <label>Sampai Tanggal</label>
+      <input type="date" id="rentangSampai" class="filter-popup-input" />
+    </div>
+    <div class="filter-popup-actions">
+      <button id="btnRentangTerapkan" class="filter-popup-btn primary">Terapkan</button>
+      <button id="btnRentangReset" class="filter-popup-btn secondary">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP FILTER KOLOM -->
+<div id="popupFilterKolom" class="filter-popup-fixed hidden">
+  <div class="filter-popup-box">
+    <div class="filter-popup-title">Tampilkan Kolom</div>
+    <div id="kolomCheckList" class="kolom-checklist"></div>
+    <div class="filter-popup-actions">
+      <button id="btnKolomTutup" class="filter-popup-btn secondary">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<nav></nav>
+
+<script src="navbar.js"></script>
+<script type="module" src="stockopname.js"></script>
+<script src="kalkulator.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
+
+</body>
+</html>

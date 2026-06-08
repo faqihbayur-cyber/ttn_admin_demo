@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Customer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<link rel="stylesheet" href="customer.css"/>
+<link rel="stylesheet" href="navbar.css"/>
+<link rel="stylesheet" href="root.css"/>
+
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <h1>
+        Customer
+      </h1>
+      <div class="header-subtitle">
+        Kelola dan lihat data customer distribusi
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="reloadCustomerBtn" class="header-btn" aria-label="Reload Customer">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+          <path d="M21 3v6h-6"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="content-wrap content-fit">
+ 
+      <!-- KIRI -->
+      <section class="content-left">
+        <section class="customer-card">
+          <div class="customer-header">
+            <div class="customer-row">
+              <label class="customer-label">
+                Pilih Nama
+              </label>
+              <div id="customerUserDropdown" class="customer-dropdown">
+                <button id="customerDropdownBtn" class="customer-dropdown-btn" type="button">
+                  <span id="customerDropdownText">
+                    Semua
+                  </span>
+                  <span class="customer-dropdown-arrow">
+                    ⌄
+                  </span>
+                </button>
+                <div id="customerDropdownPopup" class="customer-dropdown-popup">
+                  <div id="customerDropdownList" class="customer-dropdown-list">
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="customer-row">
+              <label class="customer-label">
+                Role
+              </label>
+              <input id="customerRole" class="customer-input" type="text" placeholder="-" readonly/>
+            </div>
+          </div>
+          
+          <div id="customerList" class="customer-list">
+            <div class="customer-placeholder">
+            
+              <div
+                id="customerLottie"
+                class="placeholder-lottie"
+              ></div>
+            
+              <div class="placeholder-title">
+                Belum ada customer
+              </div>
+            
+              <div class="placeholder-subtitle">
+                Data customer akan muncul di sini.
+              </div>
+            
+            </div>
+          </div>
+          
+        </section>
+      </section>
+  
+      <!-- KANAN -->
+      <aside class="content-right">
+        <div class="aside-card">
+          
+          <div class="aside-header">
+            <div class="aside-info aside-row-between">
+              <div class="aside-owner-wrap">
+                <span class="aside-key">
+                  Pemilik:
+                </span>
+            
+                <span id="asideOwnerText" class="aside-value">
+                  Semua
+                </span>
+              </div>
+              <div class="aside-filter-wrap">
+              
+                <!-- HARI -->
+                <div class="aside-custom-dropdown">
+                  <select id="filterHari" class="aside-filter-btn">
+                    <option>Semua</option>
+                    <option>Senin</option>
+                    <option>Selasa</option>
+                    <option>Rabu</option>
+                    <option>Kamis</option>
+                    <option>Jumat</option>
+                    <option>Sabtu</option>
+                    <option>Minggu</option>
+                  </select>
+              
+                  <button class="aside-dropdown-trigger" data-target="hari">
+                    <span id="filterHariText">
+                      Semua
+                    </span>
+                    <span class="aside-dropdown-arrow">
+                      ▾
+                    </span>
+                  </button>
+                  <div class="aside-dropdown-popup" id="hariDropdown">
+                    <div class="aside-dropdown-item" data-value="Semua">
+                      Semua
+                    </div>
+                    <div class="aside-dropdown-item" data-value="Senin">
+                      Senin
+                    </div>
+                    <div class="aside-dropdown-item" data-value="Selasa">
+                      Selasa
+                    </div>
+                    <div class="aside-dropdown-item" data-value="Rabu">
+                      Rabu
+                    </div>
+                    <div class="aside-dropdown-item" data-value="Kamis">
+                      Kamis
+                    </div>
+                    <div class="aside-dropdown-item" data-value="Jumat">
+                      Jumat
+                    </div>
+                    <div class="aside-dropdown-item" data-value="Sabtu">
+                      Sabtu
+                    </div>
+                    <div class="aside-dropdown-item" data-value="Minggu">
+                      Minggu
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- STATUS -->
+                <div class="aside-custom-dropdown">
+                  <select id="filterStatus" class="aside-filter-btn">
+                    <option value="true">
+                      Aktif
+                    </option>
+                    <option value="false">
+                      Tidak Aktif
+                    </option>
+                  </select>
+                  <button class="aside-dropdown-trigger" data-target="status">
+                    <span id="filterStatusText">
+                      Aktif
+                    </span>
+                    <span class="aside-dropdown-arrow">
+                      ▾
+                    </span>
+                  </button>
+                  <div class="aside-dropdown-popup" id="statusDropdown">
+                    <div class="aside-dropdown-item" data-value="true">
+                      Aktif
+                    </div>
+                    <div class="aside-dropdown-item" data-value="false">
+                      Tidak Aktif
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="aside-info aside-row-between">
+              <div class="aside-count-wrap">
+                <span class="aside-key">
+                  Jumlah Customer:
+                </span>
+            
+                <span id="asideCustomerCount" class="aside-value">
+                  0
+                </span>
+              </div>
+              <div class="aside-search">
+                <input
+                  id="asideSearchInput"
+                  type="text"
+                  placeholder="Cari customer..."
+                  autocomplete="off"
+                  class="aside-search-input"
+                />
+            
+                <div id="asideSearchSuggest" class="aside-search-suggest">
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <div id="asideBody" class="aside-body">
+            <div class="aside-placeholder">
+              Placeholder body
+            </div>
+          </div>
+      
+        </div>
+      </aside>
+  
+    </div>
+  </main>
+  
+  <!-- APPROVAL -->
+  <section class="approval-card">
+  
+    <div class="approval-header">
+      <h2>Approval Request</h2>
+      <div class="approval-subtitle">
+        Persetujuan perubahan data customer
+      </div>
+    </div>
+  
+    <div id="approvalList" class="approval-list">
+  
+      <!-- PLACEHOLDER -->
+      <div class="approval-placeholder">
+        Belum ada request approval
+      </div>
+  
+    </div>
+  
+  </section>
+</div>
+
+<div id="deleteCustomerPopup" class="delete-popup-overlay">
+  <div class="delete-popup-card">
+
+    <div class="delete-popup-title">
+      Hapus Customer
+    </div>
+
+    <div
+      id="deletePopupText"
+      class="delete-popup-subtitle"
+    >
+      Yakin ingin hapus customer?
+    </div>
+
+    <div class="delete-popup-actions">
+
+      <button
+        id="cancelDeleteBtn"
+        class="delete-popup-btn cancel"
+      >
+        Batal
+      </button>
+
+      <button
+        id="confirmDeleteBtn"
+        class="delete-popup-btn danger"
+      >
+        Hapus
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<div id="restoreCustomerPopup" class="delete-popup-overlay">
+  <div class="delete-popup-card">
+
+    <div class="delete-popup-title">
+      Kembalikan Customer
+    </div>
+
+    <div
+      id="restorePopupText"
+      class="delete-popup-subtitle"
+    >
+      Yakin ingin mengembalikan customer?
+    </div>
+
+    <div class="delete-popup-actions">
+
+      <button
+        id="cancelRestoreBtn"
+        class="delete-popup-btn cancel"
+      >
+        Batal
+      </button>
+
+      <button
+        id="confirmRestoreBtn"
+        class="delete-popup-btn success"
+      >
+        Kembalikan
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<nav></nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<script src="navbar.js"></script>
+<script type="module" src="customer.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laporan Distribusi</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="laporan.css" />
+<link rel="stylesheet" href="navbar.css" />
+<link rel="stylesheet" href="kalkulator.css" />
+<link rel="stylesheet" href="kalender.css" />
+<link rel="stylesheet" href="root.css" />
+
+</head>
+<body>
+
+<div class="page">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <h1>Laporan Distribusi</h1>
+    </div>
+    <div class="header-actions">
+      <button id="openAmplopBtn" class="reload-users-btn" type="button" aria-label="Amplop">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 7L12 13L20 7" stroke-linecap="round" stroke-linejoin="round" />
+          <rect x="4" y="6" width="16" height="12" rx="2" />
+        </svg>
+      </button>
+      <button id="openPengeluaranBtn" class="reload-users-btn" type="button" aria-label="Input Pengeluaran">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 5V19" stroke-linecap="round" />
+          <path d="M5 12H19" stroke-linecap="round" />
+        </svg>
+      </button>
+      <button id="reloadUsersBtn" class="reload-users-btn" aria-label="Reload Users">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+          <path d="M21 3v6h-6" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="content-wrap">
+      <!-- KIRI -->
+      <section class="content-left">
+        <div class="users-card">
+          <div id="listKurir" class="users-grid"></div>
+          <!-- CARD LAPORAN -->
+          <div class="report-section">
+            <div id="reportCollection" class="report-collection">
+              <div class="report-box">
+                <div class="report-empty-icon">
+                  📊
+                </div>
+                <div class="report-title">
+                  Belum ada laporan
+                </div>
+                <div class="report-subtitle">
+                  Pilih kurir untuk melihat laporan distribusi.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- KANAN -->
+      <aside class="content-right">
+        <div class="header-filter">
+          <div class="calendar-card">
+            <div class="calendar-header">
+              <div id="calendarMonthYear" class="calendar-month-year">
+                Januari 2026
+              </div>
+              <button id="dateFilterBtn" class="calendar-next-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M9 6L15 12L9 18" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+            <div class="calendar-days">
+              <span>S</span>
+              <span>S</span>
+              <span>R</span>
+              <span>K</span>
+              <span>J</span>
+              <span>S</span>
+              <span>M</span>
+            </div>
+            <div id="calendarDates" class="calendar-dates"></div>
+            <!-- Kalkulator -->
+            <button id="openCalculatorBtn" class="calendar-calculator-btn">
+              Kalkulator
+            </button>
+          </div>
+          <input type="date" id="dateFilterInput" class="date-filter-input" />
+        </div>
+      </aside>
+      <div id="calculatorRoot"></div>
+    </div>
+    <!-- CARD LAPORAN -->
+    <section class="laporan-section">
+      <div class="laporan-card">
+        <div class="laporan-header">
+          <div class="laporan-title">
+            Laporan
+          </div>
+          <div class="laporan-reload-wrap">
+            <div class="laporan-export-wrap">
+              <button id="laporanReadingBtn" class="laporan-reading-btn" type="button">
+                Mode Baca
+              </button>
+              <button id="laporanExportBtn" class="laporan-export-btn" type="button">
+                Export ⌄
+              </button>
+              <div id="laporanExportDropdown" class="laporan-export-dropdown">
+                <div class="laporan-export-item" id="exportCsvBtn">Export CSV</div>
+                <div class="laporan-export-item" id="exportPdfBtn">Export PDF</div>
+              </div>
+            </div>
+            <div class="laporan-filter-wrap">
+              <button id="laporanFilterBtn" class="laporan-filter-btn" type="button">
+                Filter ⌄
+              </button>
+              <div id="laporanFilterDropdown" class="laporan-filter-dropdown">
+                <div class="laporan-filter-item active" data-filter="all">Semua Tanggal</div>
+                <div class="laporan-filter-item" data-filter="until">Sampai Tanggal Aktif</div>
+                <div class="laporan-filter-item" data-filter="active">Hanya Tanggal Aktif</div>
+              </div>
+            </div>
+            <button id="reloadLaporanBtn" class="laporan-reload-btn" type="button">
+              Reload
+            </button>
+            <div id="reloadLaporanAlert" class="laporan-reload-alert"></div>
+
+          </div>
+        </div>
+        <div class="laporan-row">
+          <label class="laporan-row-label">
+            Pilih Nama
+          </label>
+          <div id="laporanUserDropdown" class="laporan-dropdown">
+            <button id="laporanDropdownBtn" class="laporan-dropdown-btn" type="button">
+              <span id="laporanDropdownText">
+                Pilih kurir
+              </span>
+              <span class="laporan-dropdown-arrow">
+                ⌄
+              </span>
+            </button>
+            <div id="laporanDropdownPopup" class="laporan-dropdown-popup">
+              <div id="laporanDropdownList" class="laporan-dropdown-list"></div>
+            </div>
+          </div>
+        </div>
+        <div class="laporan-row">
+          <label class="laporan-row-label">
+            Role
+          </label>
+          <input id="laporanRole" class="laporan-input" type="text" placeholder="-" readonly />
+        </div>
+        <div class="laporan-table-wrapper">
+          <table class="laporan-table">
+            <thead>
+              <tr id="laporanHeaderTop"></tr>
+              <tr id="laporanVarianHeader"></tr>
+            </thead>
+            <tbody id="laporanTableBody"></tbody>
+          </table>
+        </div>
+        <button id="readingCloseBtn" class="reading-close-btn" type="button">
+          ✕
+        </button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- POPUP DETAIL -->
+<div class="popup-detail-overlay" id="popupDetailOverlay">
+  <div class="popup-detail-box" id="popupDetailBox">
+    <div class="popup-detail-header" id="popupDetailHeader">
+      <div class="popup-detail-title-wrap">
+        <div class="popup-detail-title" id="popupDetailTitle">Detail</div>
+        <div class="popup-detail-subtitle" id="popupDetailSubtitle">-</div>
+      </div>
+      <button class="popup-detail-close" id="popupDetailClose">
+        ×
+      </button>
+    </div>
+    <div class="popup-detail-body">
+      <div class="popup-detail-total">
+        <div class="popup-detail-total-label">Jumlah Total</div>
+        <div class="popup-detail-total-value" id="popupDetailTotal">0</div>
+      </div>
+      <div class="popup-detail-list" id="popupDetailList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP WARNING INSENTIF -->
+<div id="warningTargetOverlay" class="warning-omset-overlay">
+  <div class="warning-omset-box">
+    <div class="warning-omset-icon">
+      ⚠️
+    </div>
+    <div class="warning-omset-title">
+      Target tidak terpenuhi
+    </div>
+    <div class="warning-omset-subtitle">
+      Tidak ada bonus insentif atau Kurir tidak memenuhi target customer, tulis di kasbon saja.
+    </div>
+    <div class="warning-omset-actions">
+      <button id="btnCekLagiTarget" class="warning-btn secondary">
+        Cek lagi
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP WARNING OMSET -->
+<div id="warningOmsetOverlay" class="warning-omset-overlay">
+  <div class="warning-omset-box">
+    <div class="warning-omset-icon">
+      ⚠️
+    </div>
+    <div class="warning-omset-title">
+      Omset tidak sesuai
+    </div>
+    <div class="warning-omset-subtitle">
+      Nominal omset yang diinput berbeda dengan total omset laporan. Periksa kembali sebelum lanjut.
+    </div>
+    <div class="warning-omset-actions">
+      <button id="btnCekLagi" class="warning-btn secondary">
+        Cek lagi
+      </button>
+      <button id="btnLanjutSimpan" class="warning-btn primary">
+        Lanjut simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP PENGELUARAN -->
+<div id="popupPengeluaranOverlay" class="popup-detail-overlay">
+  <div id="popupPengeluaranBox" class="popup-detail-box">
+    <div class="popup-detail-header">
+      <div class="popup-detail-title-wrap">
+        <div class="popup-detail-title">Input Pengeluaran</div>
+        <div id="popupPengeluaranSubtitle" class="popup-detail-subtitle">Pengeluaran Distribusi</div>
+      </div>
+      <button id="closePengeluaranBtn" class="popup-detail-close" type="button">×</button>
+    </div>
+    <div class="popup-detail-body popup-pengeluaran-body">
+      <!-- PERBAIKAN -->
+      <div class="pengeluaran-section">
+        <div class="pengeluaran-label">Perbaiki Peralatan</div>
+        <div id="perbaikanContainer" class="pengeluaran-container">
+          <div class="pengeluaran-row">
+            <input class="pengeluaran-input" type="text" placeholder="Input perbaikan">
+            <input class="pengeluaran-harga" type="text" inputmode="numeric" placeholder="Harga">
+          </div>
+        </div>
+        <button id="addPerbaikanBtn" class="pengeluaran-add-btn" type="button">
+          + Tambahkan kolom
+        </button>
+      </div>
+      <!-- LAINNYA -->
+      <div class="pengeluaran-section">
+        <div class="pengeluaran-label">Lainnya</div>
+        <div id="lainnyaContainer" class="pengeluaran-container">
+          <div class="pengeluaran-row">
+            <input class="pengeluaran-input" type="text" placeholder="Input lainnya">
+            <input class="pengeluaran-harga" type="text" inputmode="numeric" placeholder="Harga">
+          </div>
+        </div>
+        <button id="addLainnyaBtn" class="pengeluaran-add-btn" type="button">
+          + Tambahkan kolom
+        </button>
+      </div>
+      <!-- UPAH HUNTER -->
+      <div class="pengeluaran-section">
+        <div class="pengeluaran-label">Upah Hunter</div>
+        <div id="upahHunterStatus" class="pengeluaran-empty">
+          Tidak ada
+        </div>
+        <button id="cekCustomerHunterBtn" class="pengeluaran-add-btn" type="button">
+          Cek Customer Baru
+        </button>
+      </div>
+    </div>
+    <div class="popup-pengeluaran-footer">
+      <button id="savePengeluaranBtn" class="pengeluaran-add-btn pengeluaran-save-btn" type="button">
+        Simpan Pengeluaran
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP AMPLOP -->
+<div id="popupAmplopOverlay" class="popup-detail-overlay">
+  <div id="popupAmplopBox" class="popup-detail-box">
+    <div class="popup-detail-header">
+      <div class="popup-detail-title-wrap">
+        <div class="popup-detail-title">Laporan Amplop</div>
+        <div id="popupAmplopSubtitle" class="popup-detail-subtitle">
+          Placeholder Dulu
+        </div>
+      </div>
+      <button id="closeAmplopBtn" class="popup-detail-close" type="button">
+        ×
+      </button>
+    </div>
+    <div class="popup-amplop-body">
+      <!-- AMPLOP DISTRIBUSI -->
+      <div class="amplop-section">
+        <div class="amplop-label">Amplop Distribusi</div>
+        <div id="detailAmplopFinal" class="amplop-readonly">
+          -
+        </div>
+        <div class="amplop-detail-card">
+          <div class="amplop-detail-title">
+            Detail Amplop Distribusi
+          </div>
+          <div class="amplop-detail-row">
+            <div class="amplop-detail-label">
+              Marginal
+            </div>
+            <div id="detailAmplopDistribusi" class="amplop-detail-value">
+              -
+            </div>
+          </div>
+          <div class="amplop-detail-row">
+            <div class="amplop-detail-label">
+              Pengeluaran Kurir
+            </div>
+            <div id="detailPengeluaranKurir" class="amplop-detail-value">
+              -
+            </div>
+          </div>
+          <div class="amplop-detail-row">
+            <div class="amplop-detail-label">
+              Pengeluaran Distribusi
+            </div>
+            <div id="detailPengeluaranDistribusi" class="amplop-detail-value">
+              -
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- AMPLOP PRODUKSI -->
+      <div class="amplop-section">
+      
+        <div class="amplop-label">
+          Amplop Produksi
+        </div>
+      
+        <div
+          id="detailAmplopProduksiFinal"
+          class="amplop-readonly"
+        >
+          -
+        </div>
+      
+        <div class="amplop-detail-card">
+      
+          <div class="amplop-detail-title">
+            Detail Amplop Produksi
+          </div>
+      
+          <div class="amplop-detail-row">
+      
+            <div class="amplop-detail-label">
+              Pembayaran Kurir
+            </div>
+      
+            <div
+              id="detailPembayaranKurir"
+              class="amplop-detail-value"
+            >
+              -
+            </div>
+      
+          </div>
+      
+          <div class="amplop-detail-row">
+      
+            <div class="amplop-detail-label">
+              Pengeluaran Produksi
+            </div>
+      
+            <div
+              id="detailPengeluaranProduksi"
+              class="amplop-detail-value"
+            >
+              -
+            </div>
+      
+          </div>
+      
+        </div>
+      
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav></nav>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="navbar.js"></script>
+<script type="module" src="laporan.js"></script>
+<script src="kalkulator.js"></script>
+
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
+
+</body>
+</html>

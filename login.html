@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#b3874f">
+<link rel="icon" type="image/png" sizes="32x32" href="ikon_32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="ikon_48.png">
+<link rel="icon" type="image/png" sizes="512x512" href="ikon_512.png">
+<!-- Apple Touch Icon -->
+<link rel="apple-touch-icon" sizes="192x192" href="ikon_192.png">
+<link rel="manifest" href="manifest.json">
+<title>Login Marketing | Teh Tarik Nusantara</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="login.css">
+
+</head>
+<body>
+<div class="login-box">
+  <div class="logo-wrapper fade-item">
+    <img src="LogoTTN.png" alt="Logo TTN" id="logoTTN">
+  </div>
+  <div class="input-group fade-item email-field">
+    <i class="fa-solid fa-user"></i>
+    <input type="email" id="username" placeholder="Email">
+  </div>
+  <div class="input-group fade-item password-field">
+    <i class="fa-solid fa-lock"></i>
+    <input type="password" id="password" placeholder="Password">
+  </div>
+  <button id="loginBtn" class="fade-item login-button" onclick="login()">
+    <span id="btnText">Masuk</span>
+    <i id="btnLoader" class="fa fa-spinner fa-spin" style="display:none"></i>
+  </button>
+  <p class="error" id="error-msg"></p>
+  <div class="footer fade-item">© 2026 Teh Tarik Nusantara</div>
+</div>
+<script type="module" src="login.js"></script>
+</body>
+</html>

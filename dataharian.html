@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Data Harian</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="dataharian.css">
+<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="root.css">
+
+</head>
+<body>
+
+<div class="page">
+
+<header class="header">
+</header>
+
+<main class="content-wrapper">
+
+  <div class="content-header">
+    <div class="section-title">
+      Data Harian
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <!-- LEFT -->
+    <section class="list-section">
+      <div id="listKurir" class="list-kurir">
+        <div class="loading-card">
+          Memuat data...
+        </div>
+      </div>
+      
+      <div id="rankingOmsetCard" class="ranking-omset-card">
+        <div class="ranking-header">
+          <div class="ranking-title">
+            🏆 Ranking Omset
+          </div>
+          <button id="btnHideRanking" class="ranking-hide-btn hidden">
+            ✕
+          </button>
+        </div>
+        <div id="rankingContent">
+          <div class="ranking-placeholder">
+            Tampilkan ranking omset hari ini
+          </div>
+          <button id="btnShowRanking" class="ranking-btn">
+            Tampilkan
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <aside class="input-section">
+      <div class="input-card">
+        <div class="input-header-tools">
+        <div class="tooltip-wrap">
+          <button id="kasbonCostBtn" class="toggle-cost-btn"></button>
+          <div class="tooltip-text">Kasbon</div>
+        </div>       
+          <div class="tooltip-wrap">
+            <button id="toggleCostBtn" class="toggle-cost-btn"></button>
+            <div class="tooltip-text">Tampilkan</div>
+          </div>
+        </div>    
+        <h3 class="input-title">
+          Pengeluaran Produksi
+        </h3>
+        
+        <div class="pengeluaran-form">
+          <div class="form-subtitle">
+            VARIABLE COST
+          </div>
+          <!-- VARIABLE DARI DATABASE -->
+          <div id="variableExpenseWrap"></div>
+          <!-- CONTAINER Lainnya -->
+          <div id="lainnyaWrap" class="lainnya-wrap">
+            <div id="lainnyaList"></div>
+          </div>
+          <!-- + Lainnya -->
+          <button id="toggleLainnya" class="btn-lainnya">
+            + Lainnya
+          </button>
+          <div id="fixCostSection">
+            <div class="form-subtitle" style="margin-top:14px;">
+              FIX COST
+            </div>
+            <div id="fixCostWrap"></div>
+          </div> 
+          <div id="marginalCostSection">
+            <div class="form-subtitle" style="margin-top:14px;">
+              MARGINAL COST
+            </div>
+            <div id="marginalCostWrap"></div>
+          </div>
+          <!-- SIMPAN -->
+          <button id="btnSimpanPengeluaran" class="save-btn">
+            Simpan
+          </button>
+        </div>
+        
+      </div>
+    </aside>
+
+  </div>
+
+</main>
+
+<section class="data-section">
+
+  <div class="data-card">
+
+    <div class="data-header">
+    
+      <button
+        class="data-period-btn"
+        id="dataPeriodBtn"
+        type="button"
+      >
+        Laporan Harian
+      </button>
+    
+      <div class="data-filter-wrap">
+    
+        <button
+          class="data-filter-btn active"
+          data-filter="all"
+          type="button"
+        >
+          Semua
+        </button>
+    
+        <button
+          class="data-filter-btn"
+          data-filter="tunggakan"
+          type="button"
+        >
+          Tunggakan
+        </button>
+    
+        <button
+          class="data-filter-btn"
+          data-filter="aktif"
+          type="button"
+        >
+          Hari Aktif
+        </button>
+    
+      </div>
+    
+    </div>
+
+    <div class="data-list" id="laporanHarianList"></div>
+
+  </div>
+  
+  <!-- =====================
+  POPUP PILIH PERIODE
+  ===================== -->
+  <div
+    class="period-popup-overlay"
+    id="periodPopupOverlay"
+  >
+  
+    <div class="period-popup-box">
+  
+      <div class="period-popup-header">
+        Pilih Periode
+      </div>
+  
+      <div class="period-popup-body">
+  
+        <div class="period-field">
+          <label>Bulan</label>
+  
+          <div
+            class="custom-select"
+            id="monthSelect"
+          >
+            <button
+              class="custom-select-trigger"
+              type="button"
+            >
+              <span id="selectedMonthText">
+                Mei
+              </span>
+  
+              <span>⌄</span>
+            </button>
+  
+            <div
+              class="custom-select-menu"
+              id="monthMenu"
+            ></div>
+          </div>
+        </div>
+  
+        <div class="period-field">
+          <label>Tahun</label>
+  
+          <div
+            class="custom-select"
+            id="yearSelect"
+          >
+            <button
+              class="custom-select-trigger"
+              type="button"
+            >
+              <span id="selectedYearText">
+                2026
+              </span>
+  
+              <span>⌄</span>
+            </button>
+  
+            <div
+              class="custom-select-menu"
+              id="yearMenu"
+            ></div>
+          </div>
+        </div>
+  
+        <button
+          class="period-apply-btn"
+          id="applyPeriodBtn"
+          type="button"
+        >
+          Terapkan
+        </button>
+  
+      </div>
+  
+    </div>
+  
+  </div>
+  
+</section>
+
+</div>
+
+<!-- POPUP INPUT SVG -->
+<div class="popup-overlay" id="popupOverlay">
+
+  <div class="popup-box">
+
+    <div class="popup-header">
+
+      <h3 id="popupTitle">
+        Judul Popup
+      </h3>
+
+      <button
+        class="popup-close"
+        id="popupClose"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div
+      class="popup-content"
+      id="popupContent"
+    >
+      Isi popup
+    </div>
+
+  </div>
+
+</div>
+
+<!-- POPUP INPUT HARIAN KURIR -->
+<div id="popupDataHarianOverlay" class="popup-dataharian-overlay">
+  <div class="popup-dataharian-box">
+    <button id="popupDataHarianClose" class="popup-dataharian-close">
+      ×
+    </button>
+    <div class="popup-dataharian-header">
+      <div class="popup-dataharian-header-row">
+        <h2 id="popupDataHarianTitle">
+          Data Harian
+        </h2>
+      </div>
+    </div>
+    <div id="popupDataHarianContent" class="popup-dataharian-content">
+      Placeholder
+    </div>
+  </div>
+</div>
+
+<nav></nav>
+
+<script src="navbar.js"></script>
+<script type="module" src="dataharian.js"></script>
+
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
+
+</body>
+</html>
