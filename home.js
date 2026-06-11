@@ -1,4 +1,5 @@
 import { auth, db }          from "./index.js";
+import { initFCM } from "./fcm.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
@@ -87,6 +88,7 @@ onAuthStateChanged(auth, async (user) => {
     if (dashboard) dashboard.style.display = "block";
 
     pgmCurrentUid      = user.uid;
+    initFCM();
     _pengajuanCabangId = data.idCabang || '';
     initNotifForUser(user.uid);
     // Badge pengajuan — cek saat login
@@ -1705,13 +1707,41 @@ document.getElementById('btnSimpanPengumuman').addEventListener('click', async (
     usersSnap.forEach(d => { dibaca[d.id] = false; });
     loadingEl.style.display = 'none';
 
+    // Upload foto ke Storage jika ada
+    let fotoUrl = '';
+    if (pgmFotoBase64) {
+      const res      = await fetch(pgmFotoBase64);
+      const blob     = await res.blob();
+
+      // Compress
+      const compressed = await new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX  = 800;
+          let w = img.width, h = img.height;
+          if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(b => resolve(b), 'image/jpeg', 0.75);
+        };
+        img.src = pgmFotoBase64;
+      });
+
+      const { ref, uploadBytes, getDownloadURL } =
+        await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js');
+      const storageRef = ref(storage, `FCMImages/${pgmCurrentUid}_${Date.now()}.jpg`);
+      await uploadBytes(storageRef, compressed, { contentType: 'image/jpeg' });
+      fotoUrl = await getDownloadURL(storageRef);
+    }
+
     const docRef = await addDoc(collection(db, 'notifikasi'), {
       createdBy: pgmCurrentUid,
       createdAt: serverTimestamp(),
       type:      'kurir',
       judul,
       pesan,
-      foto:      pgmFotoBase64 || '',
+      foto:      fotoUrl,
       dibaca,
     });
 
@@ -1722,7 +1752,7 @@ document.getElementById('btnSimpanPengumuman').addEventListener('click', async (
       type:      'kurir',
       judul,
       pesan,
-      foto:      pgmFotoBase64 || '',
+      foto:      fotoUrl,
       dibaca,
     });
 
@@ -1838,3 +1868,16 @@ loadTableData();
 initCselDropdowns();
 setPageSubTitle();
 renderKPI();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("service-worker.js")
+      .then(reg => {
+        console.log("✅ Service Worker aktif", reg);
+      })
+      .catch(err => {
+        console.log("❌ Service Worker gagal", err);
+      });
+  });
+}
