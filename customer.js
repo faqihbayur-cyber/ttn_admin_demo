@@ -1,5 +1,6 @@
 
-import { auth, db } from "./index.js";
+import { auth, db, storage } from "./index.js";
+import { initFCM } from "./fcm.js";
 import {
   onAuthStateChanged
 } from
@@ -53,6 +54,7 @@ onAuthStateChanged(
     await renderCustomerList();
     await renderDefaultAside();
     await renderApprovalList();
+    initFCM();
   }
 );
 function openDB() {
@@ -929,18 +931,208 @@ async function renderCustomerAside(customer){
           }
         </div>
       </div>
+
+      <button class="edit-customer-btn" id="btnEditCustomer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Edit Customer
+      </button>
     </div>
   `;
-  const restoreBtn = document.getElementById(
-      "restoreCustomerBtn"
-    );
-  if (restoreBtn){
-    restoreBtn.onclick =
-      () =>
-        openRestorePopup(
-          customer
-        );
-  }
+  const restoreBtn = document.getElementById("restoreCustomerBtn");
+  if (restoreBtn) restoreBtn.onclick = () => openRestorePopup(customer);
+
+  document.getElementById("btnEditCustomer").addEventListener("click", () => {
+    openEditCustomerMode(customer);
+  });
+}
+
+function compressImage(file, maxWidth = 800, quality = 0.75) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width;
+        let h = img.height;
+        if (w > maxWidth) {
+          h = Math.round(h * maxWidth / w);
+          w = maxWidth;
+        }
+        canvas.width  = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => resolve(blob), "image/jpeg", quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function openEditCustomerMode(customer) {
+  const body = document.getElementById("asideBody");
+  if (!body) return;
+
+  const HARI_LIST = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
+
+  body.innerHTML = `
+    <div class="aside-customer-detail" id="editCustomerWrap">
+
+      <!-- Foto -->
+      <div class="aside-photo-card edit-photo-card" id="editFotoWrap">
+        ${customer.foto
+          ? `<img src="${customer.foto}" alt="" class="aside-customer-photo" id="editFotoPreview">`
+          : `<div class="aside-photo-empty" id="editFotoPreview">Tidak ada foto</div>`
+        }
+        <button class="edit-foto-btn" id="btnGantiFoto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          Ganti Foto
+        </button>
+        <input type="file" id="editFotoInput" accept="image/*" style="display:none">
+      </div>
+
+      <div class="aside-detail-list">
+
+        <!-- Nama -->
+        <div class="aside-detail-item aside-full">
+          <span class="detail-key">Nama Customer:</span>
+          <input type="text" class="edit-input" id="editNama"
+            value="${customer.namaCustomer || ""}" placeholder="Nama customer…">
+        </div>
+
+        <!-- Alamat -->
+        <div class="aside-detail-item aside-full">
+          <span class="detail-key">Alamat:</span>
+          <textarea class="edit-input edit-textarea" id="editAlamat"
+            placeholder="Alamat…">${customer.alamatCustomer || ""}</textarea>
+        </div>
+
+        <!-- Hari -->
+        <div class="aside-detail-item">
+          <span class="detail-key">Hari:</span>
+          <select class="edit-input edit-select" id="editHari">
+            ${HARI_LIST.map(h =>
+              `<option value="${h}" ${customer.hari === h ? "selected" : ""}>${h}</option>`
+            ).join("")}
+          </select>
+        </div>
+
+        <!-- Status isNew -->
+        <div class="aside-detail-item">
+          <span class="detail-key">Status:</span>
+          <select class="edit-input edit-select" id="editIsNew">
+            <option value="false" ${customer.isNew !== true ? "selected" : ""}>Lama</option>
+            <option value="true"  ${customer.isNew === true ? "selected" : ""}>Baru</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Tombol Simpan -->
+      <button class="edit-save-btn" id="btnSimpanCustomer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Simpan
+      </button>
+
+    </div>
+  `;
+
+  // State foto baru
+  let fotoBaruUrl = customer.foto || "";
+  let fotoBaruBlob = null;
+
+  // Ganti foto
+  document.getElementById("btnGantiFoto").addEventListener("click", () => {
+    document.getElementById("editFotoInput").click();
+  });
+  document.getElementById("editFotoInput").addEventListener("change", function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      fotoBaruUrl = e.target.result;
+      fotoBaruBlob = file;
+      const prev = document.getElementById("editFotoPreview");
+      prev.outerHTML = `<img src="${fotoBaruUrl}" alt="" class="aside-customer-photo" id="editFotoPreview">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Simpan
+  document.getElementById("btnSimpanCustomer").addEventListener("click", async () => {
+    const btn     = document.getElementById("btnSimpanCustomer");
+    const nama    = document.getElementById("editNama").value.trim();
+    const alamat  = document.getElementById("editAlamat").value.trim();
+    const hari    = document.getElementById("editHari").value;
+    const isNew   = document.getElementById("editIsNew").value === "true";
+
+    if (!nama) { alert("Nama customer wajib diisi."); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = `<span>Menyimpan…</span>`;
+
+    try {
+      let fotoFinal = customer.foto || "";
+
+      // Upload foto baru ke Storage jika ada
+      if (fotoBaruBlob) {
+        // Compress dulu via canvas
+        const compressedBlob = await compressImage(fotoBaruBlob, 800, 0.75);
+        const { ref, uploadBytes, getDownloadURL } =
+          await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js");
+        const storageRef = ref(storage, `fotoCustomer/${customer.id}`);
+        await uploadBytes(storageRef, compressedBlob, { contentType: "image/jpeg" });
+        fotoFinal = await getDownloadURL(storageRef);
+      }
+
+      const updateData = {
+        namaCustomer:    nama,
+        alamatCustomer:  alamat,
+        hari,
+        isNew,
+        foto:            fotoFinal,
+        updatedAt:       serverTimestamp(),
+      };
+
+      // Update Firestore
+      await updateDoc(doc(db, "customer", customer.id), updateData);
+
+      // Update IndexedDB
+      const dbLocal = await openCustomerDB();
+      await new Promise((resolve, reject) => {
+        const tx    = dbLocal.transaction(STORE_CUSTOMER, "readwrite");
+        const store = tx.objectStore(STORE_CUSTOMER);
+        const getReq = store.get(customer.id);
+        getReq.onsuccess = () => {
+          const old = getReq.result;
+          if (!old) { resolve(); return; }
+          store.put({ ...old, ...updateData, foto: fotoFinal, updatedAt: new Date().toISOString() });
+        };
+        tx.oncomplete = () => resolve();
+        tx.onerror    = () => reject(tx.error);
+      });
+
+      // Refresh
+      const updatedCustomer = { ...customer, ...updateData, foto: fotoFinal };
+      await renderCustomerList();
+      renderCustomerAside(updatedCustomer);
+
+    } catch (err) {
+      console.error("❌ Gagal simpan customer:", err);
+      alert("Gagal menyimpan. Coba lagi.");
+      btn.disabled = false;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Simpan`;
+    }
+  });
 }
 function openRollingAside(customer){
   const body = document.getElementById(

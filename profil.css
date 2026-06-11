@@ -1,0 +1,554 @@
+/* ═══════════════════════════════════════════════════════
+   profil.css  —  TTN Marketing App
+   Variables: mapped dari global :root (doc-1)
+   ═══════════════════════════════════════════════════════ */
+
+/* ── LOCAL ALIAS (mapped dari :root global) ─────────── */
+:root {
+  --bg:               var(--bg-start);
+  --bg-page:          linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  --card:             var(--surface-glass);
+  --card-hover:       var(--surface-glass-hover);
+  --border-card:      var(--surface-border);
+  --text:             var(--text-primary);
+  --text-muted:       var(--primary-text-muted);
+  --primary-light:    var(--primary-bg-sm);
+  --primary-dark:     var(--text-heading);
+}
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+body {
+  background: var(--bg-page);
+  min-height: 100vh;
+  margin: 0;
+}
+
+.profil-page {
+  width: 100%;
+  padding-bottom: 80px;
+  min-height: 100vh;
+}
+
+/* Desktop: full width, beri jarak atas */
+@media (min-width: 640px) {
+  .profil-page {
+    max-width: 100%;
+    padding-top: 32px;
+    padding-bottom: 64px;
+  }
+}
+
+/* ── HEADER / SAMPUL ─────────────────────────────────── */
+.sampul-wrap {
+  position: relative;
+  width: 100%;
+  height: clamp(160px, 28vw, 240px);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--text-heading) 100%);
+  overflow: hidden;
+}
+
+.sampul-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.sampul-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.38) 100%);
+}
+
+/* Tombol Edit Sampul */
+.sampul-edit-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: rgba(255,255,255,.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text-inverse);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+  z-index: 2;
+}
+.sampul-edit-btn:hover { background: rgba(255,255,255,.34); }
+.sampul-edit-btn svg {
+  width: 13px; height: 13px;
+  stroke: var(--text-inverse); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* Tombol Back */
+.sampul-back-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text-inverse);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+  z-index: 2;
+}
+.sampul-back-btn:hover { background: rgba(255,255,255,.34); }
+.sampul-back-btn svg {
+  width: 16px; height: 16px;
+  stroke: var(--text-inverse); fill: none;
+  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ── AVATAR ──────────────────────────────────────────── */
+.avatar-wrap {
+  position: relative;
+  width: 96px; height: 96px;
+  margin: -48px auto 0;
+  z-index: 3;
+}
+
+.avatar-ring {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  border: 4px solid var(--bg-start);
+  background: var(--primary-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 700;
+  color: var(--primary-dark);
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--primary-shadow-lg);
+}
+
+.avatar-ring img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+/* Tombol edit avatar (opsional, posisi sudut kanan bawah avatar) */
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-start);
+  background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+}
+.avatar-edit-btn:hover { background: var(--text-heading); }
+.avatar-edit-btn svg {
+  width: 11px; height: 11px;
+  stroke: var(--text-inverse); fill: none;
+  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ── INFO BLOCK ──────────────────────────────────────── */
+.profil-info {
+  text-align: center;
+  padding: 14px 24px 0;
+}
+
+.profil-nama {
+  font-size: clamp(18px, 4vw, 22px);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -.3px;
+  margin: 0;
+}
+
+.profil-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--primary-bg-sm);
+  border: 1px solid var(--primary-border-xs);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.profil-cabang {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--primary-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.profil-cabang svg {
+  width: 12px; height: 12px;
+  stroke: var(--primary-text-muted); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ── CARD SECTION ────────────────────────────────────── */
+.profil-section {
+  margin: 18px 16px 0;
+  background: var(--surface-glass);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 12px var(--primary-shadow-sm);
+  transition: box-shadow .2s;
+}
+.profil-section:hover {
+  box-shadow: 0 4px 20px var(--primary-shadow-md);
+}
+
+@media (min-width: 640px) {
+  .profil-section {
+    margin: 18px 24px 0;
+    border-radius: var(--radius-md);
+  }
+}
+
+.profil-section-title {
+  padding: 12px 16px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--primary-text-muted);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--primary-bg-xs);
+}
+
+/* ── PROFIL ROW ──────────────────────────────────────── */
+.profil-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--laporan-row-border);
+  transition: background .15s;
+}
+.profil-row:last-child {
+  border-bottom: none;
+}
+.profil-row:hover {
+  background: var(--primary-bg-xs);
+}
+
+.profil-row-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-bg-sm);
+  border: 1px solid var(--primary-border-xs);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.profil-row-icon svg {
+  width: 15px; height: 15px;
+  stroke: var(--text-heading); fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.profil-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.profil-row-label {
+  font-size: 10.5px;
+  color: var(--primary-text-muted);
+  font-weight: 500;
+  margin-bottom: 2px;
+  letter-spacing: .02em;
+}
+
+.profil-row-value {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Chevron opsional di sisi kanan row */
+.profil-row-arrow {
+  width: 14px; height: 14px;
+  stroke: var(--primary-text-muted); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  opacity: .6;
+  flex-shrink: 0;
+}
+
+/* ── LOGOUT BTN ──────────────────────────────────────── */
+.btn-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: calc(100% - 32px);
+  margin: 20px 16px 0;
+  height: 46px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--danger-border);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.btn-logout:hover {
+  background: var(--danger-bg-hover);
+  border-color: var(--danger);
+}
+.btn-logout:active { transform: scale(.98); }
+.btn-logout svg {
+  width: 16px; height: 16px;
+  stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+@media (min-width: 640px) {
+  .btn-logout {
+    width: calc(100% - 48px);
+    margin: 20px 24px 0;
+  }
+}
+/* ── SAMPUL OPTIONS POPUP ────────────────────────────── */
+.sampul-options {
+  display: none;
+  position: absolute;
+  bottom: 50px;
+  right: 12px;
+  z-index: 10;
+  background: var(--popup-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,.22);
+  min-width: 160px;
+  animation: sampulOptsIn .15s ease;
+}
+.sampul-options.open { display: block; }
+@keyframes sampulOptsIn {
+  from { opacity: 0; transform: translateY(6px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.sampul-opt-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+.sampul-opt-btn:hover { background: var(--primary-bg-sm); }
+.sampul-opt-btn svg {
+  width: 15px; height: 15px;
+  stroke: var(--text-heading); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.sampul-opt-btn.danger      { color: var(--danger); }
+.sampul-opt-btn.danger svg  { stroke: var(--danger); }
+.sampul-opt-btn.danger:hover { background: var(--danger-bg); }
+.sampul-opt-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 0;
+}
+/* ── CROP MODAL ──────────────────────────────────────── */
+.crop-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--overlay-dark);
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.crop-overlay.open { display: flex; }
+
+.crop-modal {
+  background: var(--popup-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+
+.crop-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.crop-modal-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.crop-modal-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--primary-text-muted);
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  transition: background .15s;
+}
+.crop-modal-close:hover { background: var(--primary-bg-sm); }
+.crop-modal-close svg {
+  width: 16px; height: 16px;
+  stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.crop-canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #111;
+  overflow: hidden;
+  cursor: move;
+  touch-action: none;
+}
+
+#cropCanvas {
+  position: absolute;
+  top: 0; left: 0;
+}
+
+.crop-guide {
+  position: absolute;
+  inset: 0;
+  /* Rule-of-thirds grid */
+  background-image:
+    linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.18) 1px, transparent 1px);
+  background-size: 33.33% 33.33%;
+  border: 2px dashed rgba(255,255,255,.45);
+  pointer-events: none;
+}
+
+.crop-hint {
+  font-size: 11px;
+  color: var(--primary-text-muted);
+  text-align: center;
+  padding: 8px 20px 4px;
+}
+
+/* Zoom slider */
+.crop-zoom-wrap {
+  display: flex; align-items: center; gap: 10px;
+  padding: 2px 20px 12px;
+}
+.crop-zoom-wrap svg {
+  width: 14px; height: 14px;
+  stroke: var(--primary-text-muted); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
+}
+#cropZoom {
+  flex: 1;
+  accent-color: var(--primary);
+}
+
+/* Action buttons */
+.crop-actions {
+  display: flex;
+  gap: 10px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn-crop-cancel {
+  flex: 1; height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--surface-border);
+  background: var(--surface-inset);
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: var(--primary-text-muted); cursor: pointer;
+  transition: background .15s;
+}
+.btn-crop-cancel:hover { background: var(--surface-glass-hover); }
+
+.btn-crop-apply {
+  flex: 2; height: 40px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: linear-gradient(135deg, var(--period-apply-gradient-start), var(--period-apply-gradient-end));
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  color: var(--text-inverse); cursor: pointer;
+  transition: opacity .15s, transform .1s;
+  box-shadow: 0 2px 10px var(--primary-shadow-md);
+}
+.btn-crop-apply:hover { opacity: .9; }
+.btn-crop-apply:active { transform: scale(.98); }
+
+/* ── SKELETON ANIMATION SHIMMER ────────────────────── */
+.skeleton-text {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--surface-border) 25%, var(--primary-bg-sm) 50%, var(--surface-border) 75%);
+  background-size: 200% 100%;
+  animation: profilSkeletonShimmer 1.5s infinite linear;
+  display: inline-block;
+}
+
+/* Variasi Ukuran Lebar */
+.skeleton-nama { width: 160px; height: 20px; margin-top: 4px; }
+.skeleton-role { width: 90px; height: 22px; border-radius: var(--radius-full); margin-top: 6px; }
+.skeleton-cabang { width: 110px; height: 13px; margin-top: 6px; }
+
+.width-lg { width: 180px; }
+.width-md { width: 140px; }
+.width-sm { width: 90px; }
+
+/* Lingkaran Avatar Shimmering */
+.avatar-ring.is-loading {
+  background: linear-gradient(90deg, var(--primary-bg-sm) 25%, var(--surface-border) 50%, var(--primary-bg-sm) 75%);
+  background-size: 200% 100%;
+  animation: profilSkeletonShimmer 1.5s infinite linear;
+  box-shadow: none;
+}
+
+@keyframes profilSkeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

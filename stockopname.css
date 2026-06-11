@@ -1497,3 +1497,35 @@ body.popup-dragging * {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* ====== SKELETON LOADER TABLE ====== */
+.table-skeleton-row td {
+  padding: 16px 14px !important;
+  background: transparent !important;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--laporan-tbl-cell-border) 25%, var(--laporan-tbl-hover-bg) 50%, var(--laporan-tbl-cell-border) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite linear;
+  display: inline-block;
+}
+
+/* Variasi Ukuran Lebar */
+.skeleton-line.full-width { width: 100px; }
+.skeleton-line.default-width { width: 45px; }
+
+/* Menyelaraskan warna dasar skeleton dengan background kolom asli */
+.skeleton-line.col-expired { width: 45px; opacity: 0.8; }
+.skeleton-line.col-koki { width: 40px; opacity: 0.8; }
+.skeleton-line.col-loyang { width: 45px; opacity: 0.8; }
+.skeleton-line.col-loyang-matcha { width: 45px; opacity: 0.8; }
+.skeleton-line.col-target { width: 45px; opacity: 0.8; }
+.skeleton-line.col-input { width: 45px; opacity: 0.8; }
+.skeleton-line.col-output { width: 45px; opacity: 0.8; }
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

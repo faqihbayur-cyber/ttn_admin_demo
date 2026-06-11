@@ -6,14 +6,38 @@ onAuthStateChanged(
   auth,
   async user => {
     if (!user) {return;}
-    initCalendar();
-    await loadKurirFromIndexedDB();
-    await renderLaporanHeader();
-    setupReloadButton();
-    setupInputPengeluaran();
-    setupPopupAmplop();
-    setupReadingMode();
-    await renderLaporanTanggalTable();
+
+    try {
+
+      initCalendar();
+
+      await loadKurirFromIndexedDB();
+
+      await renderLaporanHeader();
+
+      setupReloadButton();
+      setupInputPengeluaran();
+      setupPopupAmplop();
+      setupReadingMode();
+
+      await renderLaporanTanggalTable();
+
+    } finally {
+
+      const skeleton =
+        document.getElementById(
+          "pageSkeleton"
+        );
+
+      if (skeleton) {
+        skeleton.style.opacity = "0";
+
+        setTimeout(() => {
+          skeleton.remove();
+        }, 300);
+      }
+
+    }
   }
 );
 

@@ -1,75 +1,478 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>TTN Admin Cabang</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="index.css">
-  <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="root.css">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nusantara Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="root.css">
 </head>
 <body>
 
-  <!-- DASHBOARD -->
-  <div class="dashboard" id="dashboard">
-
-    <!-- HEADER -->
-    <header class="header">
-
-      <div class="header-user">
-
-        <!-- FOTO / INISIAL -->
-        <div class="avatar" id="avatarBox">
-
-          <img id="fotoAdmin" class="avatar-img" style="display:none;">
-
-          <span id="avatarInitial" class="avatar-initial">
-            A
-          </span>
-
-        </div>
-
-        <!-- INFO -->
-        <div class="header-info">
-
-          <div class="admin-name" id="namaAdmin">
-            Admin Cabang
-          </div>
-
-          <div class="admin-cabang" id="cabangAdmin">
-            Cabang -
-          </div>
-
-        </div>
-
-      </div>
-
-    </header>
-
-    <!-- CONTENT -->
-    <main class="main-content">
-
-      <div class="coming-soon">
-        Dashboard Admin Cabang
-      </div>
-
-    </main>
-
+<!-- SKELETON LOADER -->
+<div id="skeletonLoader">
+  <div class="sk-header">
+    <div class="sk-header-date skeleton"></div>
+    <div class="sk-header-circle skeleton"></div>
+    <div class="sk-header-circle skeleton"></div>
+    <div class="sk-header-circle skeleton"></div>
+    <div class="sk-header-circle skeleton"></div>
   </div>
+  <div class="sk-section">
+    <div class="sk-card-hero skeleton"></div>
+    <div class="sk-nav">
+      <div class="sk-nav-item skeleton"></div>
+      <div class="sk-nav-item skeleton"></div>
+      <div class="sk-nav-item skeleton"></div>
+      <div class="sk-nav-item skeleton"></div>
+      <div class="sk-nav-item skeleton"></div>
+      <div class="sk-nav-item skeleton"></div>
+    </div>
+    <div class="sk-title skeleton"></div>
+    <div class="sk-stat-grid">
+      <div class="sk-stat skeleton"></div>
+      <div class="sk-stat skeleton"></div>
+    </div>
+    <div class="sk-chart-grid">
+      <div class="sk-chart skeleton"></div>
+      <div class="sk-chart skeleton"></div>
+    </div>
+    <div class="sk-bottom-grid">
+      <div class="sk-block skeleton"></div>
+      <div class="sk-block skeleton"></div>
+    </div>
+  </div>
+</div>
 
-  <nav></nav>
+<div id="dashboard" style="display:none">
 
-  <script type="module" src="index.js"></script>
-  <script src="navbar.js"></script> 
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-datetime">
+      <span id="headerDate">-</span>
+      <span id="headerTime">-</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btnPengajuan">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        <span class="notif-dot" id="pengajuanDot" style="display:none"></span>
+      </button>
+      <button class="icon-btn" id="btnCatatan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <line x1="10" y1="9" x2="8" y2="9"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Pengumuman" id="btnPengumuman">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 8s-4 2-10 2S2 8 2 8"/>
+          <path d="M22 8c0-2.8-4.5-5-10-5S2 5.2 2 8v8c0 2.8 4.5 5 10 5s10-2.2 10-5V8z"/>
+          <line x1="12" y1="13" x2="12" y2="17"/>
+          <line x1="12" y1="9" x2="12" y2="9"/>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Notifikasi" id="btnNotifikasi">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div class="header-avatar" id="avatarInitialHeader">-</div>
+    </div>
 
+    <!-- Popup Catatan -->
+    <div class="header-popup" id="popupCatatan">
+      <div class="popup-drag-handle"></div>
+      <div class="popup-header">
+        <span class="popup-title">Catatan Pribadi</span>
+        <button class="popup-close" id="closeCatatan">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="popup-body">
+        <div class="catatan-meta">
+          <span class="catatan-label">Catatan hari ini</span>
+          <span id="catatan-updated" class="catatan-updated">
+            Belum pernah disimpan
+          </span>
+        </div>
+        <div class="catatan-form no-border">
+          <textarea
+            id="catatan-input"
+            class="catatan-textarea"
+            placeholder="Tulis catatan pribadi..."
+          ></textarea>
+      
+          <button
+            class="catatan-btn-simpan"
+            id="catatan-btn-simpan">
+            Simpan Perubahan
+          </button>
+        </div>
+      
+      </div>
+    </div>
+    <!-- Popup Pengumuman -->
+    <div class="header-popup" id="popupPengumuman">
+      <div class="popup-drag-handle"></div>
+      <div class="popup-header">
+        <span class="popup-title">Pengumuman</span>
+        <button class="popup-close" id="closePengumuman">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="popup-body">
+
+        <!-- TABS -->
+        <div class="pgm-tabs">
+          <button class="pgm-tab active" id="pgmTabBuat">Buat</button>
+          <button class="pgm-tab" id="pgmTabHistory">History</button>
+        </div>
+
+        <!-- PREVIEW -->
+        <div id="pengumumanPreview" style="display:none">
+          <div class="pgm-preview-card">
+            <img id="pgmPreviewFoto" src="" alt="" style="display:none">
+            <div class="pgm-preview-body">
+              <div class="pgm-preview-title" id="pgmPreviewJudul"></div>
+              <div class="pgm-preview-pesan" id="pgmPreviewPesan"></div>
+              <div class="pgm-preview-meta" id="pgmPreviewMeta"></div>
+            </div>
+          </div>
+          <button class="pgm-btn-secondary" id="btnPengumumanBaru">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Buat Pengumuman Baru
+          </button>
+        </div>
+
+        <!-- FORM -->
+        <div id="pengumumanForm">
+          <div class="pgm-field">
+            <label class="pgm-label">Judul</label>
+            <input type="text" class="pgm-input" id="pgmJudul" placeholder="Judul pengumuman…">
+          </div>
+          <div class="pgm-field">
+            <label class="pgm-label">Pesan</label>
+            <textarea class="pgm-input pgm-textarea" id="pgmPesan" placeholder="Tulis pesan pengumuman…"></textarea>
+          </div>
+          <div class="pgm-field">
+            <label class="pgm-label">Foto <span style="opacity:.6;font-weight:400">(opsional)</span></label>
+            <div class="pgm-foto-wrap" id="pgmFotoWrap">
+              <input type="file" id="pgmFotoInput" accept="image/*" style="display:none">
+              <div class="pgm-foto-placeholder" id="pgmFotoPlaceholder">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Tap untuk pilih foto</span>
+              </div>
+              <img id="pgmFotoPreview" src="" alt="" style="display:none;width:100%;border-radius:10px;max-height:160px;object-fit:cover;">
+              <button class="pgm-foto-remove" id="pgmFotoRemove" style="display:none">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="pgm-field-hint" id="pgmLoadingUsers" style="display:none">
+            <span>Memuat daftar penerima…</span>
+          </div>
+          <button class="pgm-btn-primary" id="btnSimpanPengumuman">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Simpan & Kirim
+          </button>
+        </div>
+
+        <!-- HISTORY -->
+        <div id="pengumumanHistory" style="display:none">
+          <div id="pgmHistoryList">
+            <div class="pgm-history-empty">Memuat history…</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- Popup Pengajuan -->
+    <div class="header-popup" id="popupPengajuan">
+      <div class="popup-drag-handle"></div>
+      <div class="popup-header">
+        <span class="popup-title">Pengajuan Pending</span>
+        <button class="popup-close" id="closePengajuan">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="popup-body" id="pengajuanBody">
+        <p class="popup-placeholder">Memuat…</p>
+      </div>
+    </div>
+    <!-- Popup Notifikasi -->
+    <div class="header-popup" id="popupNotifikasi">
+      <div class="popup-drag-handle"></div>
+      <div class="popup-header">
+        <span class="popup-title">Notifikasi</span>
+        <button class="popup-close" id="closeNotifikasi">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="popup-tabs">
+        <button class="popup-tab active" id="notifTabBaru">
+          Belum Dibaca
+          <span class="notif-tab-badge" id="notifBadgeTab"></span>
+        </button>
+        <button class="popup-tab" id="notifTabHistory">Riwayat</button>
+      </div>
+      <div class="popup-body" id="notifBody">
+        <p class="popup-placeholder">Memuat…</p>
+      </div>
+    </div>
+    <!-- Overlay -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    
+  </header>
+
+  <!-- USER INFO CARD -->
+  <div class="user-info-card">
+    <div class="user-info-inner">
+      <div class="uic-avatar-outer">
+        <div class="uic-orbit">
+          <span class="uic-orbit-dot"></span>
+        </div>
+        <div class="uic-orbit uic-orbit-2">
+          <span class="uic-orbit-dot uic-orbit-dot-2"></span>
+        </div>
+        <div class="uic-avatar-wrap">
+          <img id="fotoAdmin" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <span id="avatarInitial">-</span>
+        </div>
+      </div>
+      <div class="uic-right">
+        <h1 class="uic-welcome">Hayy...</h1>
+        <h3 class="uic-greet" id="greetMsg">Selamat siang, <span id="namaAdmin">-</span></h3>
+        <p class="uic-branch" id="cabangAdmin">-</p>
+      </div>
+    </div>
+  </div>
+        <div class="nav-grid">
+        <a class="nav-card" href="dataHarian.html">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Data Harian</span>
+          </a>
+          <a class="nav-card" href="laporan.html">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Laporan</span>
+          </a>
+          <a class="nav-card" href="rincianpengeluaran.html">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            <span>Rincian Pengeluaran</span>
+          </a>
+          <a class="nav-card" href="customer.html">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            <span>Customer</span>
+          </a>
+          <a class="nav-card" href="stockopname.html">
+            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <span>Stock Opname</span>
+          </a>
+          <a class="nav-card" href="profil.html">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Profil</span>
+          </a>
+        </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-sub" id="pageSubTitle">Ringkasan performa distribusi</p>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+        </div>
+        <div>
+          <div class="stat-label">Omset Distribusi</div>
+          <div class="stat-value" id="kpiOmsetDistribusi">—</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </div>
+        </div>
+        <div>
+          <div class="stat-label">Omset Produksi</div>
+          <div class="stat-value" id="kpiOmsetProduksi">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Distribution Chart</div>
+            <div class="card-meta" id="lineChartMeta"></div>
+          </div>
+          <div class="chart-filter-wrap">
+            <div class="custom-sel" id="monthSelWrap">
+              <div class="custom-sel-trigger" id="monthSelTrigger">Jan</div>
+              <div class="custom-sel-dropdown" id="monthSelList"></div>
+            </div>
+            <div class="custom-sel" id="yearSelWrap">
+              <div class="custom-sel-trigger" id="yearSelTrigger">2025</div>
+              <div class="custom-sel-dropdown" id="yearSelList"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Production Chart</div>
+            <div class="card-meta" id="barChartMeta">—</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY + TOP SALES -->
+    <div class="bottom-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Aktivitas Terbaru</div>
+          <span class="card-meta">Hari ini</span>
+        </div>
+        <div class="activity-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Top Closing</div>
+          <span class="card-meta">Bulan ini</span>
+        </div>
+        <div class="top-sales-list" id="topSalesList"></div>
+      </div>
+    </div>
+
+    <!-- TRANSACTION TABLE -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Transaksi Terbaru</span>
+        <div class="date-input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="date-input" type="text" placeholder="Cari nama, produk…" id="searchInput">
+        </div>
+
+        <!-- Filter Tanggal -->
+        <div class="date-input-wrap" id="btnOpenRangePicker" style="cursor:pointer;min-width:180px;">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="filterTanggalLabel" class="date-input" style="line-height:1;user-select:none;">Semua Tanggal</span>
+          <svg id="btnResetTanggal" viewBox="0 0 24 24" style="display:none;margin-left:auto;cursor:pointer;" title="Reset">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+
+        <!-- Filter Status -->
+        <div class="csel-wrap" id="cselStatusWrap">
+          <div class="csel-trigger" id="cselStatusTrigger">
+            <span id="cselStatusLabel">Semua Status</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="csel-list" id="cselStatusList">
+            <div class="csel-option" data-val="">Semua Status</div>
+            <div class="csel-option" data-val="lunas">Lunas</div>
+            <div class="csel-option" data-val="kurang">Kurang</div>
+          </div>
+        </div>
+
+        <!-- Filter Role -->
+        <div class="csel-wrap" id="cselRoleWrap">
+          <div class="csel-trigger" id="cselRoleTrigger">
+            <span id="cselRoleLabel">Semua Role</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="csel-list" id="cselRoleList">
+            <div class="csel-option" data-val="">Semua Role</div>
+            <div class="csel-option" data-val="kurir">Kurir</div>
+            <div class="csel-option" data-val="users">Users</div>
+            <div class="csel-option" data-val="sales">Sales</div>
+          </div>
+        </div>
+
+        <button class="btn" id="btnExcelExport">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+          Excel
+        </button>
+        <button class="btn" id="btnPdfExport">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          PDF
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th><th>Nama</th><th>Produk</th>
+              <th>Pembayaran</th><th>Status</th><th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="transactionBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="custom-range-overlay" id="custom-range-overlay">
+  <div class="custom-range-modal">
+    <h3>Pilih Rentang Tanggal</h3>
+    <div class="custom-range-calendars">
+      <div class="mini-calendar" id="cal-left">
+        <div class="mini-cal-header">
+          <button class="mini-cal-nav" id="cal-prev">&#8249;</button>
+          <span id="cal-left-label"></span>
+          <button class="mini-cal-nav" id="cal-next">&#8250;</button>
+        </div>
+        <div class="mini-cal-grid" id="cal-left-grid"></div>
+      </div>
+      <div class="mini-calendar" id="cal-right">
+        <div class="mini-cal-header">
+          <span id="cal-right-label" style="text-align:center;width:100%;display:block;"></span>
+        </div>
+        <div class="mini-cal-grid" id="cal-right-grid"></div>
+      </div>
+    </div>
+    <div class="custom-range-selected">
+      <span id="range-start-label">Pilih tanggal mulai</span>
+      <span class="range-sep">→</span>
+      <span id="range-end-label">Pilih tanggal akhir</span>
+    </div>
+    <div class="custom-range-actions">
+      <button class="custom-range-cancel" id="custom-range-cancel">Batal</button>
+      <button class="custom-range-apply" id="custom-range-apply" disabled>Terapkan</button>
+    </div>
+  </div>
+</div>
+
+<nav></nav>
+
+<script src="navbar.js"></script>
+<script type="module" src="index.js"></script>
+<script type="module" src="home.js"></script>
+
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
 </body>
 </html>

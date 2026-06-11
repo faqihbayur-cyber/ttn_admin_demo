@@ -1953,7 +1953,7 @@ async function renderSalesTable() {
 
   const kantorCabang = await getKantorCabangFromDB();
   const varian       = kantorCabang?.varian ?? {};
-  const varianKeys = Object.keys(varian).sort();
+  const varianKeys = (kantorCabang?.varianOrder ?? Object.keys(varian).sort());
 
   // Build header dinamis
   const thead = document.querySelector('#sales-table thead tr');

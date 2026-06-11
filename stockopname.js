@@ -1052,20 +1052,13 @@ function hitungOfFlavor(item, keys) {
 function renderTableBody(dataList, keys, dateFrom = null, dateTo = null) {
   const tbody = document.getElementById("laporanTbody");
   if (!tbody || !currentDate) return;
-
   tbody.innerHTML = "";
-
-  // mapping data by tanggal
   const dataMap = {};
-
   dataList.forEach(item => {
     const key = item.tanggal || item.id;
     dataMap[key] = item;
   });
-
-  // range tanggal
   let startDate, endDate;
-
   if (dateFrom && dateTo) {
     startDate = new Date(dateFrom);
     endDate   = new Date(dateTo);
@@ -1075,16 +1068,13 @@ function renderTableBody(dataList, keys, dateFrom = null, dateTo = null) {
     endDate   = new Date(yr, mo, 0);
   }
 
-  // render semua hari
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     const yyyy   = d.getFullYear();
     const mm     = String(d.getMonth() + 1).padStart(2, "0");
     const dd     = String(d.getDate()).padStart(2, "0");
     const tglKey = `${yyyy}-${mm}-${dd}`;
-
     const item  = dataMap[tglKey] || {};
     const stock = item.stockOpname || {};
-
     const tanggalStr = new Date(
       yyyy,
       d.getMonth(),
@@ -1095,73 +1085,40 @@ function renderTableBody(dataList, keys, dateFrom = null, dateTo = null) {
       month: "long",
       year: "numeric"
     });
-
     const v = (val) => {
       if (val === undefined || val === null) return "";
-    
       const num = Number(val);
-    
       if (!isNaN(num)) {
         const rounded = Math.round(num);
-    
         return rounded === 0
           ? ""
           : rounded;
       }
-    
       return val;
     };
-
     const tr = document.createElement("tr");
-
     tr.innerHTML += `<td>${tanggalStr}</td>`;
     tr.innerHTML += `<td class="col-expired">${v(stock.tanggalExpired)}</td>`;
     tr.innerHTML += `<td class="col-koki">${v(stock.koki)}</td>`;
     tr.innerHTML += `<td class="col-loyang">${v(stock.jumlahLoyang)}</td>`;
     tr.innerHTML += `<td class="col-loyang-matcha">${v(stock.jumlahLoyangMatcha)}</td>`;
 
-    // TARGET
     const targetMap = {};
-    
-    const loyangNormal = Number(
-      stock.jumlahLoyang || 0
-    );
-    
-    const inputCB = Number(
-      stock.produksi?.CB || 0
-    );
-    
-    const inputBB = Number(
-      stock.produksi?.BB || 0
-    );
-    
-    // TARGET CB
+    const loyangNormal = Number(stock.jumlahLoyang || 0);
+    const inputCB = Number(stock.produksi?.CB || 0);
+    const inputBB = Number(stock.produksi?.BB || 0);
     targetMap.CB = loyangNormal * 230;
-    
-    // TARGET BB
     targetMap.BB =
       targetMap.CB -
       inputCB -
       inputBB;
-
-    const inputBK = Number(
-      stock.produksi?.BK || 0
-    );
-    
-    const inputMC = Number(
-      stock.produksi?.MC || 0
-    );
-    
-    // TARGET BK
-    targetMap.BK =
-      (targetMap.BB / 2) * 2.8;
-    
-    // TARGET MC
+    const inputBK = Number(stock.produksi?.BK || 0);
+    const inputMC = Number(stock.produksi?.MC || 0);
+    targetMap.BK = (targetMap.BB / 2) * 2.8;
     targetMap.MC =
       inputBK +
       inputMC -
       targetMap.BK;
-    
     keys.forEach(k => {
       tr.innerHTML += `
         <td class="col-target">

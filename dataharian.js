@@ -48,6 +48,26 @@ let laporanFilter = localStorage.getItem(STORAGE_FILTER_KEY) || "all";
 let dbIndexed = null;
 
 // ── Auth Ready ─────────────────────────────────────────
+// Tampilkan skeleton saat halaman load
+(function showKurirSkeleton() {
+  const listEl = document.getElementById("listKurir");
+  if (!listEl) return;
+  listEl.innerHTML = Array.from({ length: 4 }).map(() => `
+    <div class="kurir-skeleton">
+      <div class="ks-avatar sk-pulse"></div>
+      <div class="ks-info">
+        <div class="ks-name sk-pulse"></div>
+        <div class="ks-role sk-pulse"></div>
+      </div>
+      <div class="ks-actions">
+        <div class="ks-btn sk-pulse"></div>
+        <div class="ks-btn sk-pulse"></div>
+        <div class="ks-btn sk-pulse"></div>
+      </div>
+    </div>
+  `).join('');
+})();
+
 onAuthStateChanged(auth, async user => {
   if (!user) {
     const listEl = document.getElementById("listKurir");
