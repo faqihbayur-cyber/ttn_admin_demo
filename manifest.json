@@ -1,0 +1,31 @@
+{
+  "name": "TTN Marketing",
+  "short_name": "TehTarik Administrasi",
+  "description": "Aplikasi manajemen pendataan divisi administrasi.",
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "background_color": "#f8e9d2",
+  "theme_color": "#b3874f",
+  "icons": [
+    {
+      "src": "icon_32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

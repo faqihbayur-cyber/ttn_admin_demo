@@ -1,6 +1,5 @@
 
 import { auth, db, storage } from "./index.js";
-import { initFCM } from "./fcm.js";
 import {
   onAuthStateChanged
 } from
@@ -54,7 +53,6 @@ onAuthStateChanged(
     await renderCustomerList();
     await renderDefaultAside();
     await renderApprovalList();
-    initFCM();
   }
 );
 function openDB() {
