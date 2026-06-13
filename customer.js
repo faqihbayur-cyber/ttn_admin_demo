@@ -1959,7 +1959,6 @@ async function renderApprovalList() {
     `;
   }
 }
-
 function setupApprovalActions() {
   const container = document.getElementById("approvalList");
   if (!container) return;
@@ -2034,7 +2033,6 @@ function setupApprovalActions() {
     });
   });
 }
-
 async function updateCustomerInIndexedDB(idCustomer, fields) {
   try {
     const dbConn = await openCustomerDB();
