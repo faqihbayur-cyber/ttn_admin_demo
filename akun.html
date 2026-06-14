@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- PWA Meta -->
+<meta name="theme-color" content="#b3874f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TTN Marketing">
+
+<!-- Icons -->
+<link rel="icon" type="image/png" sizes="32x32" href="icon_32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="icon_48.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon_512.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon_192.png">
+
+<!-- Manifest -->
+<link rel="manifest" href="manifest.json">
+<title>Nusantara Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="akun.css">
+<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="root.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<div class="mkt-header">
+    <button class="mkt-back" onclick="history.back()">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <h1 class="mkt-title">Tim Marketing</h1>
+    <button class="mkt-add-btn" id="btnTambahAkun">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- POPUP AKUN BARU -->
+  <div class="mkt-popup-overlay" id="mktPopupOverlay">
+    <div class="mkt-popup" id="mktPopup">
+      <div class="mkt-popup-header">
+        <span>Akun Baru</span>
+        <button class="mkt-popup-close" id="btnTutupPopup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="mkt-popup-body">
+
+        <!-- FOTO -->
+        <div class="mkt-foto-wrap">
+          <label class="mkt-foto-label" id="mktFotoLabel">
+            <input type="file" accept="image/*" id="mktFotoInput" hidden>
+            <div class="mkt-foto-placeholder" id="mktFotoPlaceholder">
+              <i class="fa-solid fa-camera"></i>
+              <span>Foto</span>
+            </div>
+          </label>
+        </div>
+
+        <!-- ROLE -->
+        <div class="mkt-field">
+          <label>Role</label>
+          <select id="mktRole">
+            <option value="">Pilih Role</option>
+            <option value="hunter">Hunter</option>
+            <option value="kurir">Kurir</option>
+            <option value="sales">Sales</option>
+          </select>
+        </div>
+
+        <!-- NAMA -->
+        <div class="mkt-field">
+          <label>Nama</label>
+          <input type="text" id="mktNama" placeholder="Nama lengkap">
+        </div>
+
+        <!-- EMAIL -->
+        <div class="mkt-field">
+          <label>Email</label>
+          <input type="email" id="mktEmail" placeholder="email@gmail.com">
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="mkt-field">
+          <label>Password</label>
+          <input type="password" id="mktPassword" placeholder="Min. 6 karakter">
+        </div>
+
+        <!-- NIK -->
+        <div class="mkt-field">
+          <label>NIK</label>
+          <input type="text" id="mktNik" placeholder="Nomor Induk Kependudukan" inputmode="numeric">
+        </div>
+
+        <!-- NO TELPON -->
+        <div class="mkt-field">
+          <label>No. Telpon</label>
+          <input type="text" id="mktNoTelpon" placeholder="08xxxxxxxxxx" inputmode="numeric">
+        </div>
+
+        <!-- ALAMAT -->
+        <div class="mkt-field">
+          <label>Alamat</label>
+          <textarea id="mktAlamat" placeholder="Alamat lengkap" rows="2"></textarea>
+        </div>
+
+        <!-- MOTIVASI -->
+        <div class="mkt-field">
+          <label>Motivasi</label>
+          <textarea id="mktMotivasi" placeholder="Motivasi bergabung" rows="2"></textarea>
+        </div>
+
+        <div class="mkt-error" id="mktError"></div>
+
+        <button class="mkt-simpan-btn" id="btnSimpanAkun">
+          <span id="btnSimpanText">Simpan</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+<div class="mkt-content">
+  <div class="mkt-list" id="mktList">
+    <div class="mkt-loading" id="mktLoading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Memuat data...</span>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP EDIT -->
+<div class="mkt-popup-overlay" id="mktEditOverlay">
+  <div class="mkt-popup" id="mktEditPopup">
+    <div class="mkt-popup-header">
+      <span>Edit Anggota</span>
+      <button class="mkt-popup-close" id="btnTutupEdit">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mkt-popup-body">
+
+      <div class="mkt-foto-wrap">
+        <label class="mkt-foto-label" id="mktEditFotoLabel">
+          <input type="file" accept="image/*" id="mktEditFotoInput" hidden>
+          <div class="mkt-foto-placeholder" id="mktEditFotoPlaceholder">
+            <i class="fa-solid fa-camera"></i>
+            <span>Foto</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="mkt-field">
+        <label>Nama</label>
+        <input type="text" id="mktEditNama" placeholder="Nama lengkap">
+      </div>
+
+      <div class="mkt-field">
+        <label>No. Telpon</label>
+        <input type="text" id="mktEditNoTelpon" placeholder="08xxxxxxxxxx" inputmode="numeric">
+      </div>
+
+      <div class="mkt-field">
+        <label>Alamat</label>
+        <textarea id="mktEditAlamat" placeholder="Alamat lengkap" rows="2"></textarea>
+      </div>
+
+      <div class="mkt-field">
+        <label>Motivasi</label>
+        <textarea id="mktEditMotivasi" placeholder="Motivasi" rows="2"></textarea>
+      </div>
+
+      <div class="mkt-error" id="mktEditError"></div>
+
+      <button class="mkt-simpan-btn" id="btnSimpanEdit">
+        <span id="btnSimpanEditText">Simpan</span>
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<nav></nav>
+
+<script src="navbar.js"></script>
+<script type="module" src="akun.js"></script>
+<div id="devConsoleMount"></div>
+<script src="devconsole.js"></script>
+
+</body>
+</html>

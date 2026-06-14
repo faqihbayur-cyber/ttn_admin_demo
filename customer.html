@@ -32,6 +32,11 @@
       </div>
     </div>
     <div class="header-actions">
+      <button id="addCustomerBtn" class="header-btn" aria-label="Tambah Customer">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </button>      
       <button id="reloadCustomerBtn" class="header-btn" aria-label="Reload Customer">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
@@ -321,6 +326,78 @@
 
     </div>
 
+  </div>
+</div>
+
+<div id="popupAddCustomerOverlay" class="pac-overlay">
+  <div id="popupAddCustomerBox" class="pac-box">
+    <div class="pac-header">
+      <div class="pac-header-title">Tambah Customer</div>
+      <button id="closeAddCustomerBtn" class="pac-close-btn">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="pac-foto-section">
+      <div id="pacFotoPreview" class="pac-foto-preview">
+        <svg viewBox="0 0 24 24" fill="none" class="pac-foto-icon">
+          <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="13" r="3"/>
+          <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        <span class="pac-foto-label">Pilih Foto</span>
+      </div>
+      <input type="file" id="pacFotoInput" accept="image/*" style="display:none">
+    </div>
+    <div class="pac-form">
+      <div class="pac-group">
+        <label class="pac-label">Nama Customer <span class="pac-required">*</span></label>
+        <input id="pacNama" class="pac-input" type="text" placeholder="Nama customer">
+      </div>
+      <div class="pac-group">
+        <label class="pac-label">Alamat</label>
+        <textarea id="pacAlamat" class="pac-input pac-textarea" rows="2" placeholder="Alamat customer"></textarea>
+      </div>
+      <div class="pac-group">
+        <label class="pac-label">Pemilik <span class="pac-required">*</span></label>
+        <div class="pac-dropdown" id="pacPemilikDropdown">
+          <button type="button" class="pac-dropdown-btn" id="pacPemilikBtn">
+            <span id="pacPemilikText">Pilih pemilik</span>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="pac-dropdown-list" id="pacPemilikList"></div>
+        </div>
+        <input type="hidden" id="pacPemilikUid">
+      </div>
+      <div class="pac-group">
+        <label class="pac-label">Hari <span class="pac-required">*</span></label>
+        <div class="pac-dropdown" id="pacHariDropdown">
+          <button type="button" class="pac-dropdown-btn" id="pacHariBtn">
+            <span id="pacHariText">Pilih hari</span>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="pac-dropdown-list" id="pacHariList">
+            <div class="pac-dropdown-item" data-value="Senin">Senin</div>
+            <div class="pac-dropdown-item" data-value="Selasa">Selasa</div>
+            <div class="pac-dropdown-item" data-value="Rabu">Rabu</div>
+            <div class="pac-dropdown-item" data-value="Kamis">Kamis</div>
+            <div class="pac-dropdown-item" data-value="Jumat">Jumat</div>
+            <div class="pac-dropdown-item" data-value="Sabtu">Sabtu</div>
+            <div class="pac-dropdown-item" data-value="Minggu">Minggu</div>
+          </div>
+        </div>
+      </div>
+      <div class="pac-group">
+        <label class="pac-label">Data Kemarin</label>
+        <div id="pacDataKemarin" class="pac-data-kemarin">
+          <div class="pac-dk-empty">Pilih pemilik dulu untuk mengisi data kemarin</div>
+        </div>
+      </div>
+    </div>
+    <div class="pac-footer">
+      <button id="pacSaveBtn" class="pac-save-btn" disabled>
+        <span id="pacSaveBtnText">Simpan</span>
+      </button>
+    </div>
   </div>
 </div>
 

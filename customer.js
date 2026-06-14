@@ -11,10 +11,15 @@ import {
   getDocs,
   getDoc,
   doc,
+  addDoc,
   updateDoc,
   serverTimestamp
-} from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const DB_NAME = "laporanDistribusiDB";
 const DB_NAME_CUSTOMER = "customerDB";
@@ -28,6 +33,19 @@ let selectedUserUid = "all";
 let customerSearchKeyword = "";
 let selectedHariFilter = "Semua";
 let selectedStatusFilter = true;
+
+let pacState = {
+  pemilikUid:  localStorage.getItem("pac_pemilikUid")  || "",
+  pemilikNama: localStorage.getItem("pac_pemilikNama") || "Pilih pemilik",
+  hari:        localStorage.getItem("pac_hari")        || "",
+};
+let pacFotoBlob = null;
+function savePacState() {
+  localStorage.setItem("pac_pemilikUid",  pacState.pemilikUid);
+  localStorage.setItem("pac_pemilikNama", pacState.pemilikNama);
+  localStorage.setItem("pac_hari",        pacState.hari);
+}
+
 let rollingMode = false;
 let draggedCustomer = null;
 let longPressTimer = null;
@@ -48,6 +66,7 @@ onAuthStateChanged(
     await loadUsersFromIndexedDB();
     loadCustomerState();
     setupDropdown();
+    setupAddCustomer();
     setupReloadButton();
     setupLottie();
     await renderCustomerList();
@@ -365,6 +384,20 @@ async function renderCustomerList() {
   setupMapButtons(filtered);
   setupRollingButtons(filtered);
 }
+async function saveUsersToDB(users) {
+  try {
+    const db = await openDB();
+    const tx    = db.transaction(STORE_USERS, "readwrite");
+    const store = tx.objectStore(STORE_USERS);
+    users.forEach(u => store.put(u));
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror    = () => reject(tx.error);
+    });
+  } catch (err) {
+    console.error("Gagal simpan users:", err);
+  }
+}
 async function saveCustomerToIndexedDB(customers){
   try{
     const db = await openCustomerDB();
@@ -483,41 +516,49 @@ function setupReloadButton(){
   if (!btn)
     return;
   btn.addEventListener("click",
-    async () => {
-      try{
-        btn.disabled = true;
-        btn.classList.add("loading");
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        const adminCabang = usersCache.find(user => user.uid === currentUser.uid);
-        if (!adminCabang){
-          console.error("AdminCabang tidak ditemukan");
-          btn.disabled = false;
-          btn.classList.remove("loading");
-          return;
-        }
-        const q = query(
-          collection(db, "customer"),
-          where("idCabang", "==", adminCabang.idCabang)
-        );
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map(
-            doc => ({
-              id: doc.id,
-              ...doc.data()
-            })
-          );
-        console.log("Total data:", data.length);
-        console.log(data);
-        await saveCustomerToIndexedDB(data);
-        await renderCustomerList();
-      }catch(error){
-        console.error("Gagal reload customer:", error);
-      }finally{
-        btn.disabled = false;
-        btn.classList.remove("loading");
+  async () => {
+    try {
+      btn.disabled = true;
+      btn.classList.add("loading");
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const adminCabang = usersCache.find(user => user.uid === currentUser.uid);
+      if (!adminCabang) {
+        console.error("AdminCabang tidak ditemukan");
+        return;
       }
+
+      // Ambil users createdBy adminCabang
+      const usersSnap = await getDocs(query(
+        collection(db, "users"),
+        where("createdBy", "==", currentUser.uid)
+      ));
+      const usersData = usersSnap.docs.map(d => ({ uid: d.id, ...d.data() }));
+      // Tambah juga data admin sendiri jika belum ada
+      const adminSnap = await getDoc(doc(db, "users", currentUser.uid));
+      if (adminSnap.exists()) {
+        usersData.push({ uid: currentUser.uid, ...adminSnap.data() });
+      }
+      await saveUsersToDB(usersData);
+      usersCache = usersData;
+      renderDropdownUsers();
+
+      // Ambil customer
+      const customerSnap = await getDocs(query(
+        collection(db, "customer"),
+        where("idCabang", "==", adminCabang.idCabang)
+      ));
+      const customerData = customerSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      await saveCustomerToIndexedDB(customerData);
+      await renderCustomerList();
+      await renderDefaultAside();
+    } catch (error) {
+      console.error("Gagal reload:", error);
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove("loading");
     }
-  );
+  }
+);
 }
 async function renderDefaultAside(){
   const ownerEl = document.getElementById("asideOwnerText");
@@ -944,6 +985,341 @@ async function renderCustomerAside(customer){
 
   document.getElementById("btnEditCustomer").addEventListener("click", () => {
     openEditCustomerMode(customer);
+  });
+}
+
+function setupAddCustomer() {
+  const openBtn  = document.getElementById("addCustomerBtn");
+  const overlay  = document.getElementById("popupAddCustomerOverlay");
+  const closeBtn = document.getElementById("closeAddCustomerBtn");
+  const box      = document.getElementById("popupAddCustomerBox");
+  if (!openBtn || !overlay || !box) return;
+  openBtn.addEventListener("click",  openPac);
+  closeBtn.addEventListener("click", closePac);
+  overlay.addEventListener("click",  e => { if (e.target === overlay) closePac(); });
+  setupPacFoto();
+  setupPacDropdownHari();
+  setupPacDropdownPemilik();
+  setupPacSave();
+  setupPacSwipeClose(box, closePac);
+}
+function openPac() {
+  document.getElementById("popupAddCustomerOverlay").classList.add("show");
+  // Refresh list pemilik setiap kali popup dibuka
+  const list       = document.getElementById("pacPemilikList");
+  const staffUsers = usersCache.filter(u =>
+    ["hunter","sales"].includes(u.role) &&
+    u.createdBy === currentUser?.uid
+  );
+  if (list) {
+    if (!staffUsers.length) {
+      list.innerHTML = `<div class="pac-dropdown-item" style="pointer-events:none;opacity:.5;">Belum ada data, klik reload dulu</div>`;
+    } else {
+      list.innerHTML = staffUsers.map(u => `
+        <div class="pac-dropdown-item" data-uid="${u.uid}" data-nama="${u.nama || "-"}">
+          ${u.nama || "-"}
+          <div class="pac-item-sub">${u.role}</div>
+        </div>`).join("");
+      list.querySelectorAll(".pac-dropdown-item").forEach(item => {
+        item.addEventListener("click", () => {
+          pacState.pemilikUid  = item.dataset.uid;
+          pacState.pemilikNama = item.dataset.nama;
+          savePacState();
+          document.getElementById("pacPemilikText").textContent = item.dataset.nama;
+          document.getElementById("pacPemilikUid").value        = item.dataset.uid;
+          list.querySelectorAll(".pac-dropdown-item").forEach(el => el.classList.remove("active"));
+          item.classList.add("active");
+          document.getElementById("pacPemilikDropdown")?.classList.remove("active");
+          renderPacDataKemarin(item.dataset.uid);
+          validatePacForm();
+        });
+      });
+    }
+  }
+  restorePacState();
+}
+function closePac() {
+  document.getElementById("popupAddCustomerOverlay").classList.remove("show");
+  resetPacFoto();
+}
+function restorePacState() {
+  if (pacState.pemilikUid) {
+    document.getElementById("pacPemilikText").textContent = pacState.pemilikNama;
+    document.getElementById("pacPemilikUid").value        = pacState.pemilikUid;
+    renderPacDataKemarin(pacState.pemilikUid);
+    document.getElementById("pacPemilikList")
+      ?.querySelectorAll(".pac-dropdown-item")
+      .forEach(el => el.classList.toggle("active", el.dataset.uid === pacState.pemilikUid));
+  }
+  if (pacState.hari) {
+    document.getElementById("pacHariText").textContent = pacState.hari;
+    document.getElementById("pacHariList")
+      ?.querySelectorAll(".pac-dropdown-item")
+      .forEach(el => el.classList.toggle("active", el.dataset.value === pacState.hari));
+  }
+  validatePacForm();
+}
+function setupPacFoto() {
+  const preview = document.getElementById("pacFotoPreview");
+  const input   = document.getElementById("pacFotoInput");
+  if (!preview || !input) return;
+  preview.addEventListener("click", () => input.click());
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if (!file) return;
+    pacFotoBlob = await compressImage(file, 800, 0.75);
+    const url   = URL.createObjectURL(pacFotoBlob);
+    preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:14px;">`;
+  });
+}
+function resetPacFoto() {
+  pacFotoBlob = null;
+  const input   = document.getElementById("pacFotoInput");
+  const preview = document.getElementById("pacFotoPreview");
+  if (input) input.value = "";
+  if (preview) preview.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" class="pac-foto-icon">
+      <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+      <circle cx="12" cy="13" r="3"/>
+      <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+    </svg>
+    <span class="pac-foto-label">Pilih Foto</span>`;
+}
+function setupPacDropdownHari() {
+  const dropdown = document.getElementById("pacHariDropdown");
+  const btn      = document.getElementById("pacHariBtn");
+  const list     = document.getElementById("pacHariList");
+  if (!dropdown || !btn || !list) return;
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    document.getElementById("pacPemilikDropdown")?.classList.remove("active");
+    dropdown.classList.toggle("active");
+  });
+  document.addEventListener("click", () => dropdown.classList.remove("active"));
+  list.querySelectorAll(".pac-dropdown-item").forEach(item => {
+    item.addEventListener("click", () => {
+      pacState.hari = item.dataset.value;
+      savePacState();
+      document.getElementById("pacHariText").textContent = item.dataset.value;
+      list.querySelectorAll(".pac-dropdown-item").forEach(el => el.classList.remove("active"));
+      item.classList.add("active");
+      dropdown.classList.remove("active");
+      validatePacForm();
+    });
+  });
+}
+function setupPacDropdownPemilik() {
+  const dropdown = document.getElementById("pacPemilikDropdown");
+  const btn      = document.getElementById("pacPemilikBtn");
+  const list     = document.getElementById("pacPemilikList");
+  if (!dropdown || !btn || !list) return;
+  const staffUsers = usersCache.filter(u =>
+    ["hunter","sales"].includes(u.role) &&
+    u.createdBy === currentUser?.uid
+  );
+  if (!staffUsers.length) {
+    list.innerHTML = `<div class="pac-dropdown-item" style="pointer-events:none;opacity:.5;">Belum ada data</div>`;
+  } else {
+    list.innerHTML = staffUsers.map(u => `
+      <div class="pac-dropdown-item" data-uid="${u.uid}" data-nama="${u.nama || "-"}">
+        ${u.nama || "-"}
+        <div class="pac-item-sub">${u.role}</div>
+      </div>`).join("");
+  }
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    document.getElementById("pacHariDropdown")?.classList.remove("active");
+    dropdown.classList.toggle("active");
+  });
+  document.addEventListener("click", () => dropdown.classList.remove("active"));
+  list.querySelectorAll(".pac-dropdown-item").forEach(item => {
+    item.addEventListener("click", () => {
+      pacState.pemilikUid  = item.dataset.uid;
+      pacState.pemilikNama = item.dataset.nama;
+      savePacState();
+      document.getElementById("pacPemilikText").textContent = item.dataset.nama;
+      document.getElementById("pacPemilikUid").value        = item.dataset.uid;
+      list.querySelectorAll(".pac-dropdown-item").forEach(el => el.classList.remove("active"));
+      item.classList.add("active");
+      dropdown.classList.remove("active");
+      renderPacDataKemarin(item.dataset.uid);
+      validatePacForm();
+    });
+  });
+}
+function renderPacDataKemarin(pemilikUid) {
+  const container = document.getElementById("pacDataKemarin");
+  if (!container) return;
+  const admin = usersCache.find(u => u.uid === currentUser?.uid);
+  const activeVarians = (admin?.varian || [])
+    .filter(v => { const k = Object.keys(v)[0]; return k && v[k]?.isAktif; });
+  if (!activeVarians.length) {
+    container.innerHTML = `<div class="pac-dk-empty">Tidak ada varian aktif</div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div class="pac-dk-grid">
+      ${activeVarians.map(v => {
+        const key = Object.keys(v)[0];
+        return `
+          <div class="pac-dk-col">
+            <label class="pac-dk-key">${key}</label>
+            <input class="pac-dk-qty" type="number" inputmode="numeric" placeholder="0" min="0" data-key="${key}">
+          </div>`;
+      }).join("")}
+    </div>`;
+}
+function validatePacForm() {
+  const nama    = document.getElementById("pacNama")?.value.trim();
+  const pemilik = document.getElementById("pacPemilikUid")?.value;
+  const btn     = document.getElementById("pacSaveBtn");
+  if (!btn) return;
+  btn.disabled = !(nama && pemilik && pacState.hari);
+}
+function setupPacSave() {
+  document.getElementById("pacNama")?.addEventListener("input", validatePacForm);
+  document.getElementById("pacSaveBtn")?.addEventListener("click", async () => {
+    const btn     = document.getElementById("pacSaveBtn");
+    const btnText = document.getElementById("pacSaveBtnText");
+    if (btn.disabled || btn.classList.contains("loading")) return;
+    const nama    = document.getElementById("pacNama").value.trim();
+    const alamat  = document.getElementById("pacAlamat").value.trim();
+    const pemilik = document.getElementById("pacPemilikUid").value;
+    if (!nama || !pemilik || !pacState.hari) return;
+    const dataKemarin = {};
+    document.querySelectorAll(".pac-dk-qty").forEach(input => {
+      const key = input.dataset.key;
+      const qty = Number(input.value) || 0;
+      if (key) dataKemarin[key] = { qty };
+    });
+    const admin    = usersCache.find(u => u.uid === currentUser?.uid);
+    const idCabang = admin?.idCabang || "";
+    btn.classList.add("loading");
+    btnText.innerHTML = `<span class="pac-spinner"></span> Menyimpan...`;
+    try {
+      let fotoUrl = "";
+      if (pacFotoBlob) {
+        const fileName   = `fotoCustomer/${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+        const storageRef = ref(storage, fileName);
+        await uploadBytes(storageRef, pacFotoBlob);
+        fotoUrl = await getDownloadURL(storageRef);
+      }
+      // Cek duplikat nama dari IndexedDB
+      const semuaCustomer = await getCustomerFromDB();
+      const namaBaru = nama.toLowerCase();
+      const duplikat = semuaCustomer.some(c =>
+        (c.namaCustomer || "").toLowerCase() === namaBaru
+      );
+      if (duplikat) {
+        btn.classList.remove("loading");
+        btnText.textContent = "Simpan";
+        btn.disabled = false;
+        showPacAlert("Nama customer sudah ada!");
+        return;
+      }
+      const payload = {
+        namaCustomer  : nama,
+        alamatCustomer: alamat,
+        pemilik       : pemilik,
+        hari          : pacState.hari,
+        dataKemarin   : dataKemarin,
+        foto          : fotoUrl,
+        idCabang      : idCabang,
+        createdBy     : currentUser.uid,
+        createdAt     : serverTimestamp(),
+        status        : true,
+        isNew         : true,
+        jarak         : null,
+      };
+      const docRef = await addDoc(collection(db, "customer"), payload);
+      await saveCustomerToIndexedDB([{ ...payload, id: docRef.id, createdAt: Date.now() }]);
+      resetPacForm();
+      closePac();
+      await renderCustomerList();
+      await renderDefaultAside();
+      btnText.textContent = "Berhasil ✓";
+    } catch (err) {
+      console.error("Gagal simpan customer:", err);
+      btnText.textContent = "Gagal";
+    } finally {
+      setTimeout(() => {
+        btn.classList.remove("loading");
+        btn.disabled = true;
+        btnText.textContent = "Simpan";
+      }, 1600);
+    }
+  });
+}
+function resetPacForm() {
+  const nama   = document.getElementById("pacNama");
+  const alamat = document.getElementById("pacAlamat");
+  if (nama)   nama.value   = "";
+  if (alamat) alamat.value = "";
+  document.querySelectorAll(".pac-dk-qty").forEach(i => i.value = "");
+  resetPacFoto();
+  validatePacForm();
+}
+function showPacAlert(pesan) {
+  const existing = document.getElementById("pacAlertToast");
+  if (existing) existing.remove();
+  const toast = document.createElement("div");
+  toast.id = "pacAlertToast";
+  toast.textContent = pesan;
+  toast.style.cssText = `
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(40,40,40,.92);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+    animation: pacFadeIn .2s ease;
+  `;
+  const box = document.getElementById("popupAddCustomerBox");
+  if (!box) return;
+  box.style.position = "relative";
+  box.appendChild(toast);
+  setTimeout(() => toast.remove(), 2000);
+}
+function setupPacSwipeClose(box, closeFn) {
+  if (!box) return;
+  let startY = 0, startX = 0, curY = 0, active = false;
+  box.addEventListener("touchstart", e => {
+    if (window.innerWidth > 768 || box.scrollTop > 10) return;
+    startY = curY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
+    active = true;
+    box.style.transition = "none";
+  }, { passive: true });
+  box.addEventListener("touchmove", e => {
+    if (!active || window.innerWidth > 768) return;
+    curY = e.touches[0].clientY;
+    const dY = curY - startY;
+    const dX = Math.abs(e.touches[0].clientX - startX);
+    // Abaikan jika gerak horizontal lebih dominan
+    if (dX > dY) return;
+    if (dY < 0) return;
+    // Cegah pull-to-refresh browser
+    e.preventDefault();
+    box.style.transform = `translateY(${dY * .9}px)`;
+  }, { passive: false });
+  box.addEventListener("touchend", () => {
+    if (!active || window.innerWidth > 768) return;
+    active = false;
+    const d = curY - startY;
+    box.style.transition = "transform .28s ease";
+    if (d > 120) {
+      box.style.transform = "translateY(100%)";
+      setTimeout(() => { closeFn(); box.style.transform = ""; box.style.transition = ""; }, 280);
+    } else {
+      box.style.transform = "";
+    }
   });
 }
 
